@@ -1,0 +1,138 @@
+.admin-wrap{
+    padding: 24px 0;
+  }
+
+  .admin-header{
+    margin-bottom: 24px;
+  }
+
+  .admin-title{
+    font-size: 2rem;
+    font-weight: 900;
+    color: #0f172a;
+    margin-bottom: 6px;
+  }
+
+  .admin-subtitle{
+    color: #64748b;
+    margin-bottom: 0;
+  }
+
+  .admin-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 18px;
+  }
+
+  .admin-card{
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid rgba(148,163,184,.16);
+    border-radius: 24px;
+    box-shadow: 0 16px 34px rgba(15,23,42,.06);
+    padding: 22px;
+  }
+
+  .admin-card-top{
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .admin-card h5{
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #0f172a;
+    margin-bottom: 4px;
+  }
+
+  .admin-card p{
+    color: #64748b;
+    margin-bottom: 0;
+  }
+
+  .state-pill{
+    border-radius: 999px;
+    padding: 8px 12px;
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .admin-info{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .admin-info-box{
+    border-radius: 18px;
+    background: #fff;
+    border: 1px solid rgba(148,163,184,.16);
+    padding: 14px;
+  }
+
+  .admin-label{
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #64748b;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .admin-value{
+    font-size: 14px;
+    font-weight: 800;
+    color: #0f172a;
+    word-break: break-word;
+  }
+
+  .admin-actions{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-approve{
+    border: 0;
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  }
+
+  .btn-reject{
+    border: 0;
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+
+  .empty-box{
+    border-radius: 24px;
+    background: #fff;
+    border: 1px solid rgba(148,163,184,.16);
+    padding: 36px;
+    text-align: center;
+    color: #64748b;
+  }
+
+  @media (max-width: 767px){
+    .admin-info{
+      grid-template-columns: 1fr;
+    }
+
+    .admin-actions form,
+    .admin-actions button{
+      width: 100%;
+    }
+  }

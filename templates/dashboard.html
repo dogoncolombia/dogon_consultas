@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %} | Dashboard{% endblock %}
+{% block content %}
+
+{% macro money_sin_decimales(value) -%}
+{{ "{:,.0f}".format(value|float).replace(",", ".") }}
+{%- endmacro %}
+
+<div class="row g-4 mb-4">
+  <div class="col-lg-4">
+    <div class="metric-card">
+      <small>Saldo disponible</small>
+      <h2>$ {{ money_sin_decimales(stats.balance) }}</h2>
+      <p>Disponible para consultas y futuras integraciones.</p>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="metric-card light">
+      <small>Consultas recientes</small>
+      <h2>{{ stats.recent_queries | length }}</h2>
+      <p>Últimos consumos registrados en tu cuenta.</p>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="metric-card light">
+      <small>Reportes creados</small>
+      <h2>{{ stats.recent_reports | length }}</h2>
+      <p>Últimos reportes negativos registrados por el usuario.</p>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="panel-card">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Movimientos recientes</h5>
+        <a href="{{ url_for('wallet') }}" class="small-link">Ver todo</a>
+      </div>
+
+      {% if stats.recent_transactions %}
+        {% for item in stats.recent_transactions %}
+        <div class="list-row">
+          <div>
+            <div class="fw-semibold">
+              {{ item.description or item.transaction_type|replace('_', ' ')|title }}
+            </div>
+            <small class="text-muted">
+              {{ item.created_at[:16].replace('T', ' ') }}
+            </small>
+          </div>
+
+          <span class="badge text-bg-{{ 'success' if item.amount|float >= 0 else 'danger' }}">
+            $ {{ money_sin_decimales(item.amount) }}
+          </span>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-muted mb-0">Aún no hay movimientos registrados.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="panel-card">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Accesos rápidos</h5>
+      </div>
+
+      <div class="d-grid gap-3">
+        <a href="{{ url_for('queries') }}" class="btn btn-primary">
+          Realizar consulta
+        </a>
+
+        <a href="{{ url_for('negative_reports') }}" class="btn btn-outline-primary">
+          Registrar reporte negativo
+        </a>
+
+        <a href="{{ url_for('wallet') }}" class="btn btn-outline-dark">
+          Gestionar saldo
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

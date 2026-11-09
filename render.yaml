@@ -1,0 +1,22 @@
+# Opcional: importar este archivo con New > Blueprint.
+# También se puede usar New > Web Service con los mismos comandos.
+services:
+  - type: web
+    name: dogon-pruebas
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 app:app
+    healthCheckPath: /health
+    autoDeployTrigger: "off"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: FLASK_DEBUG
+        value: "0"

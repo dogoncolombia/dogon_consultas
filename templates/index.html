@@ -1,0 +1,2389 @@
+{% extends "base.html" %}
+{% block title %} | Inicio{% endblock %}
+{% block content %}
+
+<style>
+  :root{
+    --slate-950:#020617;
+    --slate-900:#0f172a;
+    --slate-800:#1e293b;
+    --slate-700:#334155;
+    --slate-500:#64748b;
+    --slate-400:#94a3b8;
+    --slate-300:#cbd5e1;
+    --slate-200:#e2e8f0;
+    --slate-100:#f1f5f9;
+    --primary:#2563eb;
+    --primary-soft:#dbeafe;
+    --warning:#f59e0b;
+    --warning-soft:#fef3c7;
+    --danger:#ef4444;
+    --danger-soft:#fee2e2;
+    --success:#16a34a;
+    --success-soft:#dcfce7;
+  }
+
+  .home-wrapper{
+    padding-bottom: 24px;
+  }
+
+  .hero-section{
+    position: relative;
+    overflow: hidden;
+    border-radius: 30px;
+    background:
+      radial-gradient(circle at top left, rgba(245,158,11,.18), transparent 24%),
+      radial-gradient(circle at bottom right, rgba(37,99,235,.22), transparent 28%),
+      linear-gradient(135deg, #0f172a 0%, #111827 42%, #1d4ed8 100%);
+    box-shadow: 0 24px 60px rgba(15,23,42,.20);
+  }
+
+  .hero-section::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size: 34px 34px;
+    pointer-events:none;
+    opacity:.35;
+  }
+
+  .hero-section > .row{
+    position:relative;
+    z-index:1;
+  }
+
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 14px;
+    border-radius:999px;
+    background: rgba(255,255,255,.10);
+    color:#fff;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.04em;
+    border:1px solid rgba(255,255,255,.10);
+    backdrop-filter: blur(10px);
+  }
+
+  .hero-chip-list{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:22px;
+  }
+
+  .hero-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 14px;
+    border-radius:999px;
+    background: rgba(255,255,255,.10);
+    color: rgba(255,255,255,.92);
+    font-size:13px;
+    font-weight:700;
+    border:1px solid rgba(255,255,255,.10);
+    backdrop-filter: blur(8px);
+  }
+
+  .glass-card{
+    background: rgba(255,255,255,.08);
+    border-radius: 24px;
+    box-shadow: 0 18px 40px rgba(0,0,0,.14);
+    backdrop-filter: blur(12px);
+  }
+
+  .glass-list li{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:10px 0;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+
+  .glass-list li:last-child{
+    border-bottom:none;
+    padding-bottom:0;
+  }
+
+  .dashboard-card{
+    background:#fff;
+    border-radius:24px;
+    border:1px solid rgba(148,163,184,.16);
+    box-shadow: 0 14px 35px rgba(15,23,42,.08);
+  }
+
+  .stats-card{
+    position:relative;
+    overflow:hidden;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border-radius:22px;
+    padding:20px;
+    border:1px solid rgba(148,163,184,.16);
+    box-shadow:0 10px 25px rgba(15,23,42,.05);
+    height:100%;
+  }
+
+  .stats-card::after{
+    content:"";
+    position:absolute;
+    right:-18px;
+    top:-18px;
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    background: radial-gradient(circle, rgba(37,99,235,.12) 0%, rgba(37,99,235,0) 70%);
+  }
+
+  .stats-label{
+    font-size:12px;
+    color:var(--slate-500);
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    margin-bottom:10px;
+    font-weight:800;
+  }
+
+  .stats-value{
+    font-size:31px;
+    line-height:1;
+    font-weight:900;
+    color:var(--slate-900);
+  }
+
+  .stats-helper{
+    margin-top:10px;
+    font-size:12px;
+    color:var(--slate-400);
+    font-weight:600;
+  }
+
+  .section-title{
+    font-size:1.35rem;
+    font-weight:900;
+    color:var(--slate-900);
+    margin-bottom:.25rem;
+    letter-spacing:-.02em;
+  }
+
+  .section-subtitle{
+    color:var(--slate-500);
+    font-size:.95rem;
+  }
+
+  .map-panel{
+    position:relative;
+    overflow:hidden;
+    border-radius:24px;
+    min-height:650px;
+    background:
+      radial-gradient(circle at top left, rgba(59,130,246,.08), transparent 28%),
+      radial-gradient(circle at bottom right, rgba(245,158,11,.08), transparent 24%),
+      linear-gradient(180deg, #f8fafc 0%, #eef4fb 100%);
+    border:1px solid rgba(148,163,184,.12);
+  }
+
+  .map-access-zone{
+    position:relative;
+  }
+
+  .map-detail-lock-wrap{
+    position:relative;
+  }
+
+  .protected-map-content{
+    position:relative;
+  }
+
+  .map-access-zone.is-locked .protected-map-content{
+    filter: blur(8px);
+    opacity:.62;
+    pointer-events:none;
+    user-select:none;
+  }
+
+  .map-access-zone.is-locked .protected-map-content::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:rgba(248,250,252,.32);
+  }
+
+  .map-lock-overlay{
+    position:absolute;
+    inset:-8px;
+    z-index:1200;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    cursor:pointer;
+  }
+
+  .map-lock-card{
+    width:min(460px, 100%);
+    border-radius:24px;
+    padding:24px;
+    background:rgba(255,255,255,.96);
+    border:1px solid rgba(148,163,184,.28);
+    box-shadow:0 24px 60px rgba(15,23,42,.22);
+    text-align:center;
+    backdrop-filter: blur(16px);
+  }
+
+  .map-lock-icon{
+    width:56px;
+    height:56px;
+    border-radius:18px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:14px;
+    color:#fff;
+    background:linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
+    box-shadow:0 12px 26px rgba(37,99,235,.26);
+    font-size:24px;
+  }
+
+  .map-lock-title{
+    font-size:22px;
+    font-weight:900;
+    color:var(--slate-900);
+    margin-bottom:8px;
+  }
+
+  .map-lock-text{
+    color:var(--slate-500);
+    font-size:14px;
+    line-height:1.5;
+    margin-bottom:18px;
+  }
+
+  .map-lock-actions{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  #map{
+    height:650px;
+    border-radius:24px;
+    background: transparent;
+  }
+
+  .map-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.92);
+    backdrop-filter: blur(10px);
+    border:1px solid rgba(148,163,184,.16);
+    color:var(--slate-900);
+    border-radius:999px;
+    padding:10px 14px;
+    font-size:12px;
+    font-weight:800;
+    box-shadow:0 8px 18px rgba(15,23,42,.08);
+  }
+
+  .map-chip button{
+    border:0;
+    background:transparent;
+    color:inherit;
+    font-weight:800;
+    padding:0;
+  }
+
+  .side-panel{
+    padding:22px;
+    height:100%;
+  }
+
+  .panel-title{
+    font-size:16px;
+    font-weight:900;
+    color:var(--slate-900);
+    margin-bottom:4px;
+  }
+
+  .panel-subtitle{
+    font-size:13px;
+    color:var(--slate-500);
+    margin-bottom:18px;
+  }
+
+  .ranking-item{
+    border:1px solid rgba(148,163,184,.14);
+    border-radius:18px;
+    padding:14px;
+    margin-bottom:12px;
+    background:#fff;
+    transition:.2s ease;
+  }
+
+  .ranking-item:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 20px rgba(15,23,42,.06);
+  }
+
+  .ranking-item:last-child{
+    margin-bottom:0;
+  }
+
+  .ranking-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+  }
+
+  .ranking-city{
+    font-weight:800;
+    color:var(--slate-900);
+    line-height:1.2;
+  }
+
+  .ranking-dept{
+    font-size:12px;
+    color:var(--slate-500);
+    margin-top:3px;
+    font-weight:600;
+  }
+
+  .ranking-total{
+    font-size:20px;
+    font-weight:900;
+    color:var(--slate-900);
+    line-height:1;
+  }
+
+  .ranking-bottom{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-top:10px;
+  }
+
+  .ranking-bar{
+    flex:1;
+    height:10px;
+    border-radius:999px;
+    background:var(--slate-200);
+    overflow:hidden;
+  }
+
+  .ranking-bar > div{
+    height:100%;
+    border-radius:999px;
+    background:linear-gradient(90deg, #fb7185 0%, #ef4444 100%);
+  }
+
+  .ranking-btn{
+    border:0;
+    border-radius:999px;
+    background:#fff1f2;
+    color:#be123c;
+    font-size:12px;
+    font-weight:800;
+    padding:7px 10px;
+  }
+
+  .risk-badge{
+    border-radius:999px;
+    padding:5px 10px;
+    font-size:11px;
+    font-weight:900;
+    white-space:nowrap;
+  }
+
+  .risk-low{
+    background:var(--success-soft);
+    color:var(--success);
+  }
+
+  .risk-mid{
+    background:var(--warning-soft);
+    color:#b45309;
+  }
+
+  .risk-high{
+    background:var(--danger-soft);
+    color:#b91c1c;
+  }
+
+  .leaflet-div-icon{
+    background:transparent;
+    border:none;
+  }
+
+  .selected-department-label{
+    position:absolute;
+    left:18px;
+    top:18px;
+    z-index:999;
+    background:rgba(255,255,255,.96);
+    border:1px solid rgba(239,68,68,.22);
+    border-radius:999px;
+    box-shadow:0 12px 28px rgba(239,68,68,.12);
+    padding:10px 14px;
+    font-size:12px;
+    font-weight:900;
+    color:#991b1b;
+  }
+    .department-name-label{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:82px;
+    max-width:150px;
+    padding:4px 9px;
+    border-radius:999px;
+    background:rgba(255,255,255,.82);
+    border:1px solid rgba(148,163,184,.25);
+    color:#334155;
+    font-size:9px;
+    font-weight:1000;
+    line-height:1;
+    text-transform:uppercase;
+    letter-spacing:.035em;
+    white-space:nowrap;
+    text-align:center;
+    box-shadow:0 8px 18px rgba(15,23,42,.08);
+    backdrop-filter:blur(8px);
+    text-shadow:
+      0 1px 0 rgba(255,255,255,.95),
+      0 0 8px rgba(255,255,255,.95);
+    pointer-events:auto;
+    cursor:pointer;
+    transition:.2s ease;
+  }
+
+  .department-name-label.has-reports{
+    background:rgba(239,246,255,.92);
+    border-color:rgba(37,99,235,.22);
+    color:#1e40af;
+  }
+
+  .department-name-label.is-selected{
+    background:rgba(254,226,226,.98);
+    border-color:rgba(239,68,68,.38);
+    color:#991b1b;
+    box-shadow:0 10px 24px rgba(239,68,68,.18);
+  }
+
+  .department-name-label:hover{
+    transform:scale(1.04);
+    background:rgba(254,226,226,.98);
+    border-color:rgba(239,68,68,.35);
+    color:#991b1b;
+  }
+
+  @media (max-width: 575px){
+    .department-name-label{
+      font-size:8px;
+      min-width:70px;
+      max-width:120px;
+      padding:3px 7px;
+    }
+  }
+
+  /* Vista nacional: solo el número */
+  .map-number-marker{
+    width:34px;
+    height:34px;
+    border-radius:999px;
+    background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:17px;
+    font-weight:1000;
+    line-height:1;
+    box-shadow:
+      0 10px 22px rgba(239,68,68,.30),
+      0 0 0 5px rgba(255,255,255,.86);
+    border:2px solid #fff;
+    transition:.2s ease;
+  }
+
+  .map-number-marker:hover{
+    transform:scale(1.08);
+  }
+
+  /* Vista por departamento: número + ciudad, sin tarjeta */
+  .map-city-marker{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    transform:translateY(-2px);
+    pointer-events:auto;
+  }
+
+  .map-city-number{
+    width:30px;
+    height:30px;
+    min-width:30px;
+    border-radius:999px;
+    background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:15px;
+    font-weight:1000;
+    line-height:1;
+    box-shadow:
+      0 8px 18px rgba(239,68,68,.28),
+      0 0 0 4px rgba(255,255,255,.85);
+    border:2px solid #fff;
+  }
+
+  .map-city-name{
+    color:#0f172a;
+    font-size:11px;
+    font-weight:1000;
+    line-height:1;
+    text-transform:uppercase;
+    letter-spacing:.02em;
+    text-shadow:
+      0 0 8px rgba(255,255,255,.95),
+      0 1px 0 rgba(255,255,255,.95);
+    white-space:nowrap;
+  }
+
+  .popup-box{
+    min-width:240px;
+  }
+
+  .popup-title{
+    font-size:15px;
+    font-weight:900;
+    color:var(--slate-900);
+    margin-bottom:8px;
+  }
+
+  .popup-row{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:6px;
+    font-size:13px;
+  }
+
+  .popup-row span:first-child{
+    color:var(--slate-500);
+  }
+
+  .popup-row span:last-child{
+    color:var(--slate-900);
+    font-weight:800;
+    text-align:right;
+  }
+
+  .empty-ranking{
+    border-radius:18px;
+    background:var(--slate-100);
+    border:1px dashed var(--slate-300);
+    padding:22px;
+    color:var(--slate-500);
+    font-weight:700;
+    text-align:center;
+  }
+
+  .department-list{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+
+  .department-chip{
+    border:0;
+    border-radius:999px;
+    background:#f1f5f9;
+    color:#334155;
+    padding:9px 12px;
+    font-size:12px;
+    font-weight:900;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    transition:.2s ease;
+  }
+
+  .department-chip:hover{
+    background:#fee2e2;
+    color:#991b1b;
+    transform:translateY(-1px);
+  }
+
+  .department-chip.active{
+    background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    color:#fff;
+    box-shadow:0 10px 22px rgba(239,68,68,.22);
+  }
+
+  .tutorial-modal .modal-content{
+    border:0;
+    border-radius:28px;
+    overflow:hidden;
+    box-shadow:0 30px 80px rgba(15,23,42,.28);
+    background:#fff;
+  }
+
+  .tutorial-side{
+    position:relative;
+    min-height:100%;
+    padding:32px 28px;
+    background:
+      radial-gradient(circle at top left, rgba(59,130,246,.32), transparent 35%),
+      radial-gradient(circle at bottom right, rgba(245,158,11,.26), transparent 30%),
+      linear-gradient(160deg, #0f172a 0%, #111827 45%, #1d4ed8 100%);
+    color:#fff;
+  }
+
+  .tutorial-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 14px;
+    border-radius:999px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.18);
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.03em;
+    margin-bottom:18px;
+    backdrop-filter: blur(10px);
+  }
+
+  .tutorial-brand{
+    font-size:34px;
+    font-weight:900;
+    letter-spacing:-.03em;
+    margin-bottom:10px;
+  }
+
+  .tutorial-side p{
+    color:rgba(255,255,255,.78);
+    margin-bottom:24px;
+  }
+
+  .tutorial-main{
+    padding:34px 34px 28px;
+    background:
+      radial-gradient(circle at top right, rgba(59,130,246,.07), transparent 22%),
+      linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    min-height:100%;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .tutorial-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+  }
+
+  .tutorial-steps-indicator{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .tutorial-dot{
+    width:36px;
+    height:36px;
+    border-radius:999px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    font-weight:800;
+    color:var(--slate-500);
+    background:var(--slate-200);
+    transition:.25s ease;
+  }
+
+  .tutorial-dot.active{
+    background:linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+    color:#fff;
+    box-shadow:0 10px 18px rgba(249,115,22,.25);
+    transform:scale(1.05);
+  }
+
+  .tutorial-dot.done{
+    background:#dbeafe;
+    color:#2563eb;
+  }
+
+  .tutorial-progress{
+    width:100%;
+    height:10px;
+    border-radius:999px;
+    background:var(--slate-200);
+    overflow:hidden;
+    margin-bottom:28px;
+  }
+
+  .tutorial-progress-bar{
+    height:100%;
+    width:0%;
+    border-radius:999px;
+    background:linear-gradient(90deg, #f59e0b 0%, #2563eb 100%);
+    transition:width .35s ease;
+  }
+
+  .tutorial-step{
+    animation:tutorialFade .28s ease;
+  }
+
+  @keyframes tutorialFade{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .tutorial-kicker{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    border-radius:999px;
+    background:#eff6ff;
+    color:#2563eb;
+    font-size:12px;
+    font-weight:800;
+    padding:8px 14px;
+    margin-bottom:18px;
+  }
+
+  .tutorial-title{
+    font-size:2rem;
+    line-height:1.1;
+    font-weight:900;
+    color:var(--slate-900);
+    margin-bottom:14px;
+  }
+
+  .tutorial-text{
+    font-size:1rem;
+    color:var(--slate-700);
+    margin-bottom:24px;
+  }
+
+  .tutorial-highlight{
+    border-radius:22px;
+    background:#fff;
+    border:1px solid rgba(148,163,184,.18);
+    box-shadow:0 14px 30px rgba(15,23,42,.06);
+    padding:20px;
+  }
+
+  .tutorial-highlight ul{
+    padding-left:18px;
+    margin-bottom:0;
+  }
+
+  .tutorial-highlight li{
+    color:var(--slate-700);
+    margin-bottom:10px;
+  }
+
+  .tutorial-highlight li:last-child{
+    margin-bottom:0;
+  }
+
+  .tutorial-actions{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-top:auto;
+    padding-top:26px;
+  }
+
+  .tutorial-btn{
+    border-radius:14px;
+    font-weight:800;
+    padding:12px 18px;
+    border:0;
+    transition:.2s ease;
+  }
+
+  .tutorial-btn-secondary{
+    background:var(--slate-200);
+    color:var(--slate-900);
+  }
+
+  .tutorial-btn-primary{
+    background:linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+    color:#fff;
+    box-shadow:0 14px 28px rgba(249,115,22,.22);
+  }
+
+  .tutorial-btn-success{
+    background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color:#fff;
+    box-shadow:0 14px 28px rgba(37,99,235,.22);
+  }
+
+  .tutorial-check{
+    background:#f8fafc;
+    border:1px solid var(--slate-200);
+    border-radius:16px;
+    padding:14px 16px;
+    margin-top:18px;
+  }
+
+  .tutorial-check label{
+    color:var(--slate-700);
+    font-weight:600;
+  }
+
+  .whatsapp-floating-wrapper{
+    position:fixed;
+    right:24px;
+    bottom:24px;
+    z-index:99999;
+    display:flex;
+    align-items:flex-end;
+    gap:14px;
+    font-family:Arial, Helvetica, sans-serif;
+  }
+
+  .whatsapp-floating-card{
+    width:310px;
+    max-width:calc(100vw - 110px);
+    background:rgba(255,255,255,.96);
+    border:1px solid rgba(148,163,184,.22);
+    border-radius:22px;
+    box-shadow:0 22px 55px rgba(15,23,42,.22);
+    padding:16px 16px 15px;
+    backdrop-filter:blur(14px);
+    transform:translateY(0);
+    animation:whatsappCardIn .55s ease both;
+  }
+
+  @keyframes whatsappCardIn{
+    from{
+      opacity:0;
+      transform:translateY(18px) scale(.96);
+    }
+    to{
+      opacity:1;
+      transform:translateY(0) scale(1);
+    }
+  }
+
+  .whatsapp-floating-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+  }
+
+  .whatsapp-floating-title{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:#0f172a;
+    font-size:15px;
+    font-weight:900;
+    line-height:1.2;
+  }
+
+  .whatsapp-floating-title span{
+    width:34px;
+    height:34px;
+    min-width:34px;
+    border-radius:12px;
+    background:linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+    color:#fff;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 10px 18px rgba(18,140,126,.22);
+  }
+
+  .whatsapp-floating-close{
+    width:28px;
+    height:28px;
+    border:0;
+    border-radius:999px;
+    background:#f1f5f9;
+    color:#64748b;
+    font-weight:900;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    transition:.2s ease;
+  }
+
+  .whatsapp-floating-text{
+    color:#64748b;
+    font-size:13px;
+    line-height:1.45;
+    margin-bottom:13px;
+  }
+
+  .whatsapp-floating-action{
+    border:0;
+    text-decoration:none;
+    border-radius:14px;
+    padding:11px 14px;
+    background:linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+    color:#fff !important;
+    font-size:13px;
+    font-weight:900;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    box-shadow:0 14px 26px rgba(18,140,126,.24);
+    transition:.2s ease;
+    width:100%;
+  }
+
+  .whatsapp-floating-button{
+    position:relative;
+    width:64px;
+    height:64px;
+    min-width:64px;
+    border-radius:22px;
+    border:0;
+    background:linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 22px 42px rgba(18,140,126,.34);
+    cursor:pointer;
+    transition:.2s ease;
+  }
+
+  .whatsapp-floating-button i{
+    font-size:31px;
+    position:relative;
+    z-index:2;
+  }
+
+  .whatsapp-floating-pulse{
+    position:absolute;
+    inset:-8px;
+    border-radius:28px;
+    background:rgba(37,211,102,.26);
+    animation:whatsappPulse 1.8s ease-out infinite;
+  }
+
+  @keyframes whatsappPulse{
+    0%{
+      transform:scale(.86);
+      opacity:.85;
+    }
+    100%{
+      transform:scale(1.28);
+      opacity:0;
+    }
+  }
+
+  .whatsapp-floating-badge{
+    position:absolute;
+    top:-6px;
+    right:-6px;
+    width:22px;
+    height:22px;
+    border-radius:999px;
+    background:#ef4444;
+    color:#fff;
+    font-size:12px;
+    font-weight:900;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:2px solid #fff;
+    z-index:3;
+  }
+
+  .whatsapp-floating-wrapper.is-minimized .whatsapp-floating-card{
+    display:none;
+  }
+
+  @media (max-width: 1199px){
+    .map-panel,
+    #map{
+      min-height:560px;
+      height:560px;
+    }
+  }
+
+  @media (max-width: 991px){
+    .hero-section .display-5{
+      font-size:2rem;
+    }
+
+    .map-panel,
+    #map{
+      min-height:500px;
+      height:500px;
+    }
+
+    .tutorial-main{
+      padding:24px 20px 22px;
+    }
+
+    .tutorial-title{
+      font-size:1.6rem;
+    }
+
+    .tutorial-actions{
+      flex-direction:column-reverse;
+      align-items:stretch;
+    }
+  }
+
+  @media (max-width: 575px){
+    .whatsapp-floating-wrapper{
+      right:14px;
+      bottom:14px;
+      gap:10px;
+    }
+
+    .whatsapp-floating-card{
+      width:260px;
+      max-width:calc(100vw - 95px);
+      padding:14px;
+      border-radius:20px;
+    }
+
+    .whatsapp-floating-title{
+      font-size:13px;
+    }
+
+    .whatsapp-floating-text{
+      font-size:12px;
+    }
+
+    .whatsapp-floating-button{
+      width:58px;
+      height:58px;
+      min-width:58px;
+      border-radius:20px;
+    }
+
+    .whatsapp-floating-button i{
+      font-size:28px;
+    }
+  }
+</style>
+
+<div class="home-wrapper">
+  <section class="hero-section mb-5">
+    <div class="row g-0 align-items-center">
+      <div class="col-lg-7 p-4 p-md-5 p-lg-6">
+        <span class="eyebrow">
+          <i class="bi bi-shield-lock-fill"></i>
+          Central de Riesgos Logísticos en Colombia
+        </span>
+
+        <h1 class="display-5 fw-bold text-white mt-3">
+          Evita pérdidas por <span class="hero-accent">clientes incumplidos</span>
+        </h1>
+
+        <p class="lead text-white-50 mt-3 mb-0">
+          Visualiza en tiempo real los usuarios reportados en Colombia, con lectura territorial más clara.
+        </p>
+
+        <div class="hero-chip-list">
+          <span class="hero-chip"><i class="bi bi-geo-alt-fill"></i> Cobertura nacional</span>
+          <span class="hero-chip"><i class="bi bi-bar-chart-line-fill"></i> Lectura por ciudad</span>
+          <span class="hero-chip"><i class="bi bi-lightning-charge-fill"></i> Consulta rápida</span>
+        </div>
+
+       {% if not session.get("rol") %}
+        <div class="d-flex gap-3 mt-4 flex-wrap">
+          <a href="{{ url_for('register') }}" class="btn btn-warning btn-lg px-4">
+            Únete a la red
+          </a>
+          <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg px-4">
+            Ingresar
+          </a>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="col-lg-5 p-4 p-lg-5">
+        <div class="glass-card p-4 border border-warning border-opacity-25">
+          <h5 class="text-white fw-semibold mb-3">¿Qué puedes hacer?</h5>
+
+          <ul class="list-unstyled mb-0 glass-list">
+            <li class="text-white-50">
+              <i class="bi bi-x-circle-fill text-danger mt-1"></i>
+              <span>Reportar clientes incumplidos con mayor orden y trazabilidad.</span>
+            </li>
+            <li class="text-white-50">
+              <i class="bi bi-search text-success mt-1"></i>
+              <span>Consultar usuarios reportados antes de despachar un pedido.</span>
+            </li>
+            <li class="text-white-50">
+              <i class="bi bi-map text-warning mt-1"></i>
+              <span>Analizar la incidencia por ciudad.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="map-access-zone {% if not current_user %}is-locked{% endif %}" id="mapAccessZone">
+  <section class="mb-4">
+    <div class="row g-3">
+      <div class="col-md-3">
+        <div class="stats-card">
+          <div class="stats-label">Total reportados</div>
+          <div
+            class="stats-value"
+            id="statTotalReportadosPais"
+            {% if not current_user %}data-counter-target="{{ public_report_count|default(0) }}"{% endif %}
+          >0</div>
+          <div class="stats-helper">Reportados activos en Colombia</div>
+        </div>
+      </div>
+
+    
+    </div>
+  </section>
+
+    <div class="map-detail-lock-wrap">
+    <div class="protected-map-content">
+  <section class="mt-4">
+    <div class="row g-4 align-items-stretch">
+      <div class="col-xl-8">
+        <div class="dashboard-card p-3">
+          <div class="d-flex justify-content-between align-items-center mb-3 px-2 flex-wrap gap-2">
+            <div>
+              <div class="section-title">Mapa de reportes en Colombia</div>
+              <div class="section-subtitle">Haz clic sobre un departamento para ver sus ciudades reportadas.</div>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+              <span class="map-chip"><i class="bi bi-arrows-move"></i> Arrastrable</span>
+              <span class="map-chip"><i class="bi bi-zoom-in"></i> Zoom activo</span>
+              <span class="map-chip">
+                <button type="button" id="resetMapBtn">
+                  <i class="bi bi-arrow-counterclockwise"></i> Reiniciar vista
+                </button>
+              </span>
+            </div>
+          </div>
+
+          <div class="map-panel">
+            <div class="selected-department-label" id="selectedDepartmentLabel">
+              Colombia · Total reportados
+            </div>
+
+            <div id="map"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-4">
+        <div class="dashboard-card side-panel h-100">
+          <div class="panel-title">Últimos reportes de hoy</div>
+          <div class="panel-subtitle">
+            El mapa muestra todos los reportados activos; esta lista solo muestra los registros recientes del día actual.
+          </div>
+
+          <div id="departmentList" class="department-list mb-3">
+            <div class="empty-ranking">
+              Aún no hay departamentos con reportes.
+            </div>
+          </div>
+
+          <div id="rankingList" class="ranking-list-full">
+            <div class="empty-ranking">
+              Aún no hay reportes registrados hoy.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+    </div>
+
+    {% if not current_user %}
+      <div class="map-lock-overlay" id="mapLockOverlay" role="button" tabindex="0">
+        <div class="map-lock-card">
+          <div class="map-lock-icon">
+            <i class="bi bi-lock-fill"></i>
+          </div>
+          <div class="map-lock-title">Datos protegidos</div>
+          <div class="map-lock-text">
+            Hay <strong>{{ public_report_count|default(0) }}</strong> reportados activos. Inicia sesión o regístrate para ver ciudades, mapa y casos.
+          </div>
+          <div class="map-lock-actions">
+            <a href="{{ url_for('login') }}" class="btn btn-primary px-4">
+              Iniciar sesión
+            </a>
+            <a href="{{ url_for('register') }}" class="btn btn-warning px-4">
+              Registrarse
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="mapLoginRequiredModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content border-0 rounded-4">
+            <div class="modal-body p-4 text-center">
+              <div class="map-lock-icon">
+                <i class="bi bi-shield-lock-fill"></i>
+              </div>
+              <h5 class="fw-bold mb-2">Debes iniciar sesión</h5>
+              <p class="text-muted mb-4">
+                Hay {{ public_report_count|default(0) }} reportados activos. Inicia sesión o regístrate para ver ciudades, mapa y casos.
+              </p>
+              <div class="d-flex gap-2 justify-content-center flex-wrap">
+                <a href="{{ url_for('login') }}" class="btn btn-primary px-4">Iniciar sesión</a>
+                <a href="{{ url_for('register') }}" class="btn btn-warning px-4">Registrarse</a>
+                <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="free-consultation-access">
+  <a href="{{ url_for('free_report_lookup') }}">Consultar reportados gratis <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+</div>
+
+<!-- BOTÓN FLOTANTE DE WHATSAPP -->
+<div class="whatsapp-floating-wrapper" id="whatsappFloatingWrapper">
+  <div class="whatsapp-floating-card" id="whatsappFloatingCard">
+    <div class="whatsapp-floating-top">
+      <div class="whatsapp-floating-title">
+        <span>
+          <i class="bi bi-whatsapp"></i>
+        </span>
+        Comunícate con nosotros
+      </div>
+
+      <button type="button" class="whatsapp-floating-close" id="whatsappFloatingClose" aria-label="Cerrar mensaje de WhatsApp">
+        ×
+      </button>
+    </div>
+
+    <div class="whatsapp-floating-text">
+      Escríbenos para cualquier duda, soporte, recargar saldo o recibir ayuda con tu cuenta.
+    </div>
+
+    <div class="whatsapp-floating-actions">
+      <a href="#" class="whatsapp-floating-action" id="whatsappFloatingLink" target="_blank" rel="noopener noreferrer">
+        <i class="bi bi-whatsapp"></i>
+        Escribir por WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <button type="button" class="whatsapp-floating-button" id="whatsappFloatingButton" aria-label="Abrir WhatsApp">
+    <span class="whatsapp-floating-pulse"></span>
+    <span class="whatsapp-floating-badge">1</span>
+    <i class="bi bi-whatsapp"></i>
+  </button>
+</div>
+
+<div class="modal fade tutorial-modal" id="dogonTutorialModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-sm-down">
+    <div class="modal-content">
+      <div class="row g-0 h-100">
+        <div class="col-lg-5">
+          <div class="tutorial-side h-100">
+            <div class="tutorial-badge">
+              <i class="bi bi-shield-lock-fill"></i>
+              Bienvenido a la red Dogon
+            </div>
+
+          </div>
+        </div>
+
+        <div class="col-lg-7">
+          <div class="tutorial-main">
+            <div class="tutorial-scroll">
+            <div class="tutorial-top">
+              <div class="tutorial-steps-indicator">
+                <div class="tutorial-dot active" data-dot="0">1</div>
+                <div class="tutorial-dot" data-dot="1">2</div>
+                <div class="tutorial-dot" data-dot="2">3</div>
+              </div>
+              <span class="text-muted fw-semibold" id="tutorialStepText">Paso 1 de 3</span>
+            </div>
+
+            <div class="tutorial-progress">
+              <div class="tutorial-progress-bar" id="tutorialProgressBar"></div>
+            </div>
+
+            <div class="tutorial-step" data-step="0">
+              <div class="tutorial-kicker">
+                <i class="bi bi-question-circle-fill"></i>
+                Introducción
+              </div>
+
+              <h2 class="tutorial-title">¿Qué es Dogon?</h2>
+
+              <p class="tutorial-text">
+                Es una red de protección para los envíos contra entrega. Aquí los vendedores se apoyan mutuamente para identificar clientes incumplidos y reducir pérdidas.
+              </p>
+            </div>
+
+            <div class="tutorial-step d-none" data-step="1">
+              <div class="tutorial-kicker">
+                <i class="bi bi-shield-check"></i>
+                Utilidad
+              </div>
+
+              <h2 class="tutorial-title">¿Para qué sirve?</h2>
+
+              <p class="tutorial-text">
+                Dogon te sirve como central de riesgos, ayuda a verificar el cliente antes de enviar. Así puede tomar decisiones con mayor criterio y además reportar los clientes incumplidos.
+              </p>
+            </div>
+
+            <div class="tutorial-step d-none" data-step="2">
+              <div class="tutorial-kicker">
+                <i class="bi bi-diagram-3-fill"></i>
+                Funcionamiento
+              </div>
+
+              <h2 class="tutorial-title">¿Cómo funciona?</h2>
+
+              <p class="tutorial-text">
+                El mapa muestra la cantidad de reportes por ciudad, con una vista clara, limpia y fácil de interpretar.
+              </p>
+
+              <div class="tutorial-highlight">
+                <ul>
+                  <li>Consulta tu cliente antes de enviar.</li>
+                  <li>Si no aparece, operas con más tranquilidad.</li>
+                  <li>Si aparece reportado, puedes ajustar tu decisión comercial.</li>
+                  <li>Si envias y te incumple, lo reportas y asi evitaras que otro vendedor pierda dinero.</li>
+                </ul>
+              </div>
+
+              <div class="tutorial-check">
+                <div class="form-check mb-0">
+                  <input class="form-check-input" type="checkbox" id="tutorialAcceptCheck">
+                  <label class="form-check-label" for="tutorialAcceptCheck">
+                    He leído toda la información y deseo ingresar a la plataforma.
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            </div>
+            <div class="tutorial-actions">
+              <button type="button" class="tutorial-btn tutorial-btn-secondary d-none" id="tutorialPrevBtn">
+                <i class="bi bi-arrow-left me-1"></i> Atrás
+              </button>
+
+              <div class="right-actions ms-auto d-flex gap-2">
+                <button type="button" class="tutorial-btn tutorial-btn-primary" id="tutorialNextBtn">
+                  Siguiente <i class="bi bi-arrow-right ms-1"></i>
+                </button>
+
+                <button type="button" class="tutorial-btn tutorial-btn-success d-none" id="tutorialFinishBtn" disabled>
+                  Ingresar a Dogon <i class="bi bi-check2-circle ms-1"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const tutorialStorageKey = "dogon_tutorial_aceptado_v1";
+
+    const tutorialModalEl = document.getElementById("dogonTutorialModal");
+    if (!tutorialModalEl || typeof bootstrap === "undefined") return;
+
+    // Si ya aceptó el tutorial, no se vuelve a mostrar
+    if (localStorage.getItem(tutorialStorageKey) === "1") {
+      return;
+    }
+
+    const steps = Array.from(tutorialModalEl.querySelectorAll(".tutorial-step"));
+    const dots = Array.from(tutorialModalEl.querySelectorAll(".tutorial-dot"));
+    const stepText = document.getElementById("tutorialStepText");
+    const progressBar = document.getElementById("tutorialProgressBar");
+    const prevBtn = document.getElementById("tutorialPrevBtn");
+    const nextBtn = document.getElementById("tutorialNextBtn");
+    const finishBtn = document.getElementById("tutorialFinishBtn");
+    const acceptCheck = document.getElementById("tutorialAcceptCheck");
+
+    let currentStep = 0;
+
+    const tutorialModal = new bootstrap.Modal(tutorialModalEl, {
+      backdrop: "static",
+      keyboard: false
+    });
+
+    function renderTutorialStep() {
+      const scrollArea = tutorialModalEl.querySelector(".tutorial-scroll");
+      if (scrollArea) scrollArea.scrollTop = 0;
+      steps.forEach((step, index) => {
+        step.classList.toggle("d-none", index !== currentStep);
+      });
+
+      dots.forEach((dot, index) => {
+        dot.classList.remove("active", "done");
+
+        if (index === currentStep) {
+          dot.classList.add("active");
+        } else if (index < currentStep) {
+          dot.classList.add("done");
+        }
+      });
+
+      const progress = ((currentStep + 1) / steps.length) * 100;
+      progressBar.style.width = progress + "%";
+      stepText.textContent = `Paso ${currentStep + 1} de ${steps.length}`;
+
+      prevBtn.classList.toggle("d-none", currentStep === 0);
+      nextBtn.classList.toggle("d-none", currentStep === steps.length - 1);
+      finishBtn.classList.toggle("d-none", currentStep !== steps.length - 1);
+
+      if (currentStep === steps.length - 1) {
+        finishBtn.disabled = !acceptCheck.checked;
+      } else {
+        finishBtn.disabled = true;
+      }
+    }
+
+    nextBtn.addEventListener("click", function () {
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        renderTutorialStep();
+      }
+    });
+
+    prevBtn.addEventListener("click", function () {
+      if (currentStep > 0) {
+        currentStep--;
+        renderTutorialStep();
+      }
+    });
+
+    acceptCheck.addEventListener("change", function () {
+      if (currentStep === steps.length - 1) {
+        finishBtn.disabled = !acceptCheck.checked;
+      }
+    });
+
+    finishBtn.addEventListener("click", function () {
+      // Guarda que ya aceptó el tutorial
+      localStorage.setItem(tutorialStorageKey, "1");
+
+      tutorialModal.hide();
+    });
+
+    tutorialModalEl.addEventListener("hidden.bs.modal", function () {
+      document.body.classList.remove("modal-open");
+      document.body.style.overflow = "";
+    });
+
+    renderTutorialStep();
+    tutorialModal.show();
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const whatsappNumber = "573011541975";
+    const whatsappMessage = "Hola, necesito ayuda con Dogon. Quiero comunicarme con ustedes para resolver una duda, recargar saldo o recibir soporte.";
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+
+    const wrapper = document.getElementById("whatsappFloatingWrapper");
+    const closeBtn = document.getElementById("whatsappFloatingClose");
+    const floatBtn = document.getElementById("whatsappFloatingButton");
+    const linkBtn = document.getElementById("whatsappFloatingLink");
+
+    if (linkBtn) {
+      linkBtn.href = whatsappUrl;
+    }
+
+    if (floatBtn) {
+      floatBtn.addEventListener("click", function () {
+        if (wrapper && wrapper.classList.contains("is-minimized")) {
+          wrapper.classList.remove("is-minimized");
+          return;
+        }
+
+        window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+      });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", function () {
+        if (wrapper) {
+          wrapper.classList.add("is-minimized");
+        }
+      });
+    }
+  });
+</script>
+<script>
+  const MAP_DATA_LOCKED = {{ 'true' if not current_user else 'false' }};
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const overlay = document.getElementById("mapLockOverlay");
+    const modalEl = document.getElementById("mapLoginRequiredModal");
+    const modal = modalEl && typeof bootstrap !== "undefined"
+      ? new bootstrap.Modal(modalEl)
+      : null;
+    const counter = document.querySelector("[data-counter-target]");
+
+    if (counter) {
+      const target = Number(counter.dataset.counterTarget || 0);
+      const duration = 850;
+      const start = performance.now();
+
+      function animateCounter(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const value = Math.round(target * eased);
+
+        counter.textContent = formatNumber(value);
+
+        if (progress < 1) {
+          requestAnimationFrame(animateCounter);
+        } else {
+          counter.textContent = formatNumber(target);
+        }
+      }
+
+      requestAnimationFrame(animateCounter);
+    }
+
+    function showMapAccessMessage() {
+      if (modal) {
+        modal.show();
+      } else {
+        alert("Debes iniciar sesión o registrarte para ver los datos.");
+      }
+    }
+
+    if (overlay) {
+      overlay.addEventListener("click", function (event) {
+        if (event.target.closest("a")) {
+          return;
+        }
+
+        showMapAccessMessage();
+      });
+
+      overlay.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          showMapAccessMessage();
+        }
+      });
+    }
+  });
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function escapeAttr(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  function formatNumber(value) {
+    return new Intl.NumberFormat("es-CO").format(Number(value || 0));
+  }
+
+  function normalizeText(value) {
+    return String(value || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function getRiskText(total) {
+    const n = Number(total || 0);
+    if (n >= 7) return "Alto";
+    if (n >= 4) return "Medio";
+    return "Bajo";
+  }
+
+  function getRiskClass(total) {
+    const n = Number(total || 0);
+    if (n >= 7) return "risk-high";
+    if (n >= 4) return "risk-mid";
+    return "risk-low";
+  }
+
+  function getDepartmentNameFromFeature(feature) {
+    const props = feature.properties || {};
+
+    return props.DPTO_CNMBR ||
+      props.NOMBRE_DPT ||
+      props.NOMBRE_DEP ||
+      props.DEPARTAMEN ||
+      props.DEPTO ||
+      props.departamento ||
+      props.name ||
+      "";
+  }
+
+  function buildPayloadFromLegacyArray(data) {
+    const ciudades = Array.isArray(data) ? data : [];
+    const departamentosMap = {};
+
+    ciudades.forEach(function(item) {
+      const department = item.department || "Sin departamento";
+
+      if (!departamentosMap[department]) {
+        departamentosMap[department] = {
+          department: department,
+          total: 0,
+          cities: [],
+          ultimos: []
+        };
+      }
+
+      departamentosMap[department].total += Number(item.total || 0);
+      departamentosMap[department].cities.push(item);
+      departamentosMap[department].ultimos.push(item);
+    });
+
+    const departamentos = Object.values(departamentosMap)
+      .sort((a, b) => Number(b.total || 0) - Number(a.total || 0));
+
+    departamentos.forEach(function(dept) {
+      dept.cities = dept.cities.sort((a, b) => Number(b.total || 0) - Number(a.total || 0));
+      dept.ultimos = dept.ultimos.slice(0, 8);
+    });
+
+    const totalReportes = ciudades.reduce((sum, item) => sum + Number(item.total || 0), 0);
+
+    return {
+      total_reportados_pais: totalReportes,
+      total_reportes_hoy: 0,
+      total_ciudades_pais: ciudades.length,
+      total_departamentos_pais: departamentos.length,
+      departamentos: departamentos,
+      ciudades: ciudades,
+      ultimos: []
+    };
+  }
+
+const COLOMBIA_MAX_BOUNDS = L.latLngBounds([
+  [-4.9, -82.4],
+  [13.95, -66.7]
+]);
+
+/*
+  Vista inicial más cerrada sobre Colombia continental.
+  Así el mapa no entra tan alejado ni se ven todos los nombres amontonados.
+*/
+const COLOMBIA_INITIAL_BOUNDS = L.latLngBounds([
+  [-4.8, -79.4],
+  [12.9, -66.9]
+]);
+
+const MAP_MAX_BOUNDS = COLOMBIA_MAX_BOUNDS.pad(0.10);
+
+const map = L.map("map", {
+  zoomControl: true,
+  attributionControl: false,
+  dragging: true,
+  scrollWheelZoom: true,
+  doubleClickZoom: true,
+  boxZoom: true,
+  keyboard: true,
+
+  // Permite zoom más fino, no solo de 1 en 1
+  zoomSnap: 0.25,
+  zoomDelta: 0.25,
+
+  // Evita que el mapa quede demasiado alejado
+  minZoom: 5.35,
+  maxZoom: 12,
+
+  maxBounds: MAP_MAX_BOUNDS,
+  maxBoundsViscosity: 0.7
+});
+
+function ajustarVistaInicialMapa(animado = false) {
+  map.fitBounds(COLOMBIA_INITIAL_BOUNDS, {
+    paddingTopLeft: [20, 60],
+    paddingBottomRight: [20, 20],
+    maxZoom: 6.15,
+    animate: animado,
+    duration: 1.1
+  });
+
+  setTimeout(function () {
+    if (map.getZoom() < 5.75) {
+      map.setZoom(5.75, {
+        animate: animado
+      });
+    }
+  }, 120);
+}
+
+ajustarVistaInicialMapa(false);
+
+  map.createPane("geoPane");
+  map.getPane("geoPane").style.zIndex = 350;
+
+  map.createPane("labelsPane");
+  map.getPane("labelsPane").style.zIndex = 610;
+
+  map.createPane("countsPane");
+  map.getPane("countsPane").style.zIndex = 620;
+
+  let geoLayer = null;
+  let departmentLabelsLayer = L.layerGroup().addTo(map);
+  let cityMarkersLayer = L.layerGroup().addTo(map);
+  let currentPayload = null;
+  let selectedDepartment = null;
+  let isLoadingMapReports = false;
+
+  function defaultDepartmentStyle() {
+    return {
+      color: "#cbd5e1",
+      weight: 1.1,
+      fillColor: "#eef6ff",
+      fillOpacity: 0.78
+    };
+  }
+
+  function departmentWithReportsStyle() {
+    return {
+      color: "#bfdbfe",
+      weight: 1.4,
+      fillColor: "#dbeafe",
+      fillOpacity: 0.70
+    };
+  }
+
+  function selectedDepartmentStyle() {
+    return {
+      color: "#ef4444",
+      weight: 2.8,
+      fillColor: "#fee2e2",
+      fillOpacity: 0.88
+    };
+  }
+
+  function getDepartmentVisualStyle(departmentName) {
+    if (normalizeText(departmentName) === normalizeText(selectedDepartment)) {
+      return selectedDepartmentStyle();
+    }
+
+    if (departmentHasReports(departmentName)) {
+      return departmentWithReportsStyle();
+    }
+
+    return defaultDepartmentStyle();
+  }
+
+  function departmentHasReports(departmentName) {
+    if (!currentPayload || !currentPayload.departamentos) {
+      return false;
+    }
+
+    const normalized = normalizeText(departmentName);
+
+    return currentPayload.departamentos.some(function(item) {
+      return normalizeText(item.department) === normalized;
+    });
+  }
+
+  function getDepartmentData(departmentName) {
+    if (!currentPayload || !currentPayload.departamentos) {
+      return null;
+    }
+
+    const normalized = normalizeText(departmentName);
+
+    return currentPayload.departamentos.find(function(item) {
+      return normalizeText(item.department) === normalized;
+    }) || null;
+  }
+
+  function renderDepartmentLabels() {
+    departmentLabelsLayer.clearLayers();
+
+    if (!geoLayer) {
+      return;
+    }
+
+    geoLayer.eachLayer(function(layer) {
+      const departmentName = getDepartmentNameFromFeature(layer.feature);
+
+      if (!departmentName) {
+        return;
+      }
+
+      let center;
+
+      try {
+        center = layer.getBounds().getCenter();
+      } catch (e) {
+        return;
+      }
+
+      const hasReports = departmentHasReports(departmentName);
+      const isSelected = normalizeText(departmentName) === normalizeText(selectedDepartment);
+
+      const labelHtml = `
+        <div class="department-name-label ${hasReports ? "has-reports" : ""} ${isSelected ? "is-selected" : ""}">
+          ${escapeHtml(departmentName)}
+        </div>
+      `;
+
+      const labelMarker = L.marker(center, {
+        pane: "labelsPane",
+        interactive: true,
+        icon: L.divIcon({
+          className: "",
+          html: labelHtml,
+          iconSize: [150, 24],
+          iconAnchor: [75, 12]
+        })
+      }).addTo(departmentLabelsLayer);
+
+      labelMarker.on("click", function() {
+        selectDepartment(departmentName);
+      });
+    });
+  }
+
+  function refreshDepartmentStyles() {
+    if (!geoLayer) {
+      return;
+    }
+
+    geoLayer.eachLayer(function(layer) {
+      const departmentName = getDepartmentNameFromFeature(layer.feature);
+      layer.setStyle(getDepartmentVisualStyle(departmentName));
+    });
+
+    renderDepartmentLabels();
+  }
+
+  function fitCountryView() {
+    selectedDepartment = null;
+
+    const label = document.getElementById("selectedDepartmentLabel");
+    if (label) {
+      label.textContent = `Colombia · ${formatNumber(currentPayload?.total_reportados_pais || 0)} reportados activos`;
+    }
+
+    if (geoLayer) {
+      refreshDepartmentStyles();
+    }
+
+    if (currentPayload) {
+      renderCityMarkers(currentPayload.ciudades || [], false);
+      renderLatestList(currentPayload.ultimos || []);
+    }
+
+    document.querySelectorAll(".department-chip").forEach(function(btn) {
+      btn.classList.toggle("active", btn.dataset.department === "");
+    });
+
+    ajustarVistaInicialMapa(true);
+  }
+
+  function selectDepartment(departmentName) {
+    selectedDepartment = departmentName;
+
+    const deptData = getDepartmentData(departmentName);
+    const label = document.getElementById("selectedDepartmentLabel");
+
+    if (label) {
+      label.textContent = deptData
+        ? `Departamento: ${deptData.department} · ${formatNumber(deptData.total)} reportados`
+        : `Departamento: ${departmentName} · Sin reportes`;
+    }
+
+    if (geoLayer) {
+      geoLayer.eachLayer(function(layer) {
+        const name = getDepartmentNameFromFeature(layer.feature);
+
+        if (normalizeText(name) === normalizeText(departmentName)) {
+          try {
+            map.flyToBounds(layer.getBounds(), {
+              padding: [30, 30],
+              duration: 1.1
+            });
+          } catch (e) {}
+        }
+      });
+
+      refreshDepartmentStyles();
+    }
+
+    document.querySelectorAll(".department-chip").forEach(function(btn) {
+      btn.classList.toggle(
+        "active",
+        normalizeText(btn.dataset.department) === normalizeText(departmentName)
+      );
+    });
+
+    if (deptData) {
+      renderCityMarkers(deptData.cities || [], true);
+      renderLatestList(deptData.ultimos || []);
+    } else {
+      renderCityMarkers([], true);
+      renderLatestList([]);
+    }
+  }
+
+  window.selectDepartment = selectDepartment;
+
+  function pintarDepartamentoSeleccionadoSinZoom(departmentName) {
+    const deptData = getDepartmentData(departmentName);
+    const label = document.getElementById("selectedDepartmentLabel");
+
+    if (!deptData) {
+      selectedDepartment = null;
+
+      if (label) {
+        label.textContent = `Colombia · ${formatNumber(currentPayload?.total_reportados_pais || 0)} reportados activos`;
+      }
+
+      if (geoLayer) {
+        refreshDepartmentStyles();
+      }
+
+      renderCityMarkers(currentPayload.ciudades || [], false);
+      renderLatestList(currentPayload.ultimos || []);
+      return;
+    }
+
+    if (label) {
+      label.textContent = `Departamento: ${deptData.department} · ${formatNumber(deptData.total)} reportados`;
+    }
+
+    if (geoLayer) {
+      refreshDepartmentStyles();
+    }
+
+    document.querySelectorAll(".department-chip").forEach(function(btn) {
+      btn.classList.toggle(
+        "active",
+        normalizeText(btn.dataset.department) === normalizeText(departmentName)
+      );
+    });
+
+    renderCityMarkers(deptData.cities || [], true);
+    renderLatestList(deptData.ultimos || []);
+  }
+
+  function zoomToCity(lat, lng) {
+    map.flyTo([Number(lat), Number(lng)], 9, {
+      animate: true,
+      duration: 1.15
+    });
+  }
+
+  window.zoomToCity = zoomToCity;
+
+  const resetBtn = document.getElementById("resetMapBtn");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", fitCountryView);
+  }
+
+  fetch("https://raw.githubusercontent.com/caticoa3/colombia_mapa/master/co_2018_MGN_DPTO_POLITICO.geojson")
+    .then(res => res.json())
+    .then(geojson => {
+      geoLayer = L.geoJSON(geojson, {
+        pane: "geoPane",
+        style: function(feature) {
+          const departmentName = getDepartmentNameFromFeature(feature);
+          return getDepartmentVisualStyle(departmentName);
+        },
+        onEachFeature: function(feature, layer) {
+          const departmentName = getDepartmentNameFromFeature(feature);
+
+          layer.on("click", function() {
+            selectDepartment(departmentName);
+          });
+
+          layer.on("mouseover", function() {
+            if (normalizeText(departmentName) !== normalizeText(selectedDepartment)) {
+              layer.setStyle({
+                color: "#93c5fd",
+                weight: 2,
+                fillColor: departmentHasReports(departmentName) ? "#dbeafe" : "#f8fbff",
+                fillOpacity: 0.92
+              });
+            }
+          });
+
+          layer.on("mouseout", function() {
+            layer.setStyle(getDepartmentVisualStyle(departmentName));
+          });
+        }
+      }).addTo(map);
+
+      fitCountryView();
+      renderDepartmentLabels();
+    })
+    .catch(err => {
+      console.error("Error cargando geojson de Colombia:", err);
+    });
+
+  function renderEmptyState() {
+    const rankingList = document.getElementById("rankingList");
+    const departmentList = document.getElementById("departmentList");
+
+    const statTotalReportadosPais = document.getElementById("statTotalReportadosPais");
+    const statReportesHoy = document.getElementById("statReportesHoy");
+    const statTotalCiudadesPais = document.getElementById("statTotalCiudadesPais");
+    const statTotalDepartamentosPais = document.getElementById("statTotalDepartamentosPais");
+
+    if (statTotalReportadosPais) statTotalReportadosPais.innerText = "0";
+    if (statReportesHoy) statReportesHoy.innerText = "0";
+    if (statTotalCiudadesPais) statTotalCiudadesPais.innerText = "0";
+    if (statTotalDepartamentosPais) statTotalDepartamentosPais.innerText = "0";
+
+    const label = document.getElementById("selectedDepartmentLabel");
+    if (label) {
+      label.textContent = "Colombia · 0 reportados activos";
+    }
+
+    cityMarkersLayer.clearLayers();
+
+    if (geoLayer) {
+      refreshDepartmentStyles();
+    }
+
+    if (departmentList) {
+      departmentList.innerHTML = `
+        <div class="empty-ranking">
+          Aún no hay departamentos con reportes.
+        </div>
+      `;
+    }
+
+    if (rankingList) {
+      rankingList.innerHTML = `
+        <div class="empty-ranking">
+          Aún no hay reportes registrados hoy.
+        </div>
+      `;
+    }
+  }
+
+  function renderDepartmentList(departamentos) {
+    const container = document.getElementById("departmentList");
+
+    if (!container) {
+      return;
+    }
+
+    if (!departamentos || !departamentos.length) {
+      container.innerHTML = `
+        <div class="empty-ranking">
+          Aún no hay departamentos con reportes.
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = `
+      <button type="button" class="department-chip active" data-department="">
+        Colombia
+        <strong>${formatNumber(currentPayload.total_reportados_pais || 0)}</strong>
+      </button>
+
+      ${departamentos.map(function(item) {
+        return `
+          <button
+            type="button"
+            class="department-chip"
+            data-department="${escapeAttr(item.department)}"
+          >
+            ${escapeHtml(item.department)}
+            <strong>${formatNumber(item.total)}</strong>
+          </button>
+        `;
+      }).join("")}
+    `;
+
+    container.querySelectorAll(".department-chip").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        const department = btn.dataset.department || "";
+
+        if (!department) {
+          fitCountryView();
+          return;
+        }
+
+        selectDepartment(department);
+      });
+    });
+  }
+
+  function renderCityMarkers(data, showCityName) {
+    cityMarkersLayer.clearLayers();
+
+    data.forEach((r) => {
+      const lat = Number(r.lat);
+      const lng = Number(r.lng);
+      const total = Number(r.total || 0);
+
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+        return;
+      }
+
+      const cityName = r.city || "Ciudad";
+      const departmentName = r.department || "-";
+
+      const popupHtml = `
+        <div class="popup-box">
+          <div class="popup-title">${escapeHtml(cityName)}</div>
+
+          <div class="popup-row">
+            <span>Departamento</span>
+            <span>${escapeHtml(departmentName)}</span>
+          </div>
+
+          <div class="popup-row">
+            <span>Total reportes</span>
+            <span>${formatNumber(total)}</span>
+          </div>
+
+          <div class="popup-row">
+            <span>Nivel</span>
+            <span>${escapeHtml(r.nivel || getRiskText(total))}</span>
+          </div>
+        </div>
+      `;
+
+      let markerHtml = "";
+      let iconSize = [40, 40];
+      let iconAnchor = [20, 20];
+      let popupAnchor = [0, -18];
+
+      if (showCityName) {
+        markerHtml = `
+          <div class="map-city-marker">
+            <div class="map-city-number">
+              ${formatNumber(total)}
+            </div>
+
+            <div class="map-city-name">
+              ${escapeHtml(cityName)}
+            </div>
+          </div>
+        `;
+
+        iconSize = [150, 36];
+        iconAnchor = [15, 18];
+        popupAnchor = [0, -18];
+
+      } else {
+        markerHtml = `
+          <div class="map-number-marker">
+            ${formatNumber(total)}
+          </div>
+        `;
+      }
+
+      const countMarker = L.marker([lat, lng], {
+        pane: "countsPane",
+        icon: L.divIcon({
+          className: "",
+          iconSize: iconSize,
+          iconAnchor: iconAnchor,
+          popupAnchor: popupAnchor,
+          html: markerHtml
+        })
+      }).addTo(cityMarkersLayer).bindPopup(popupHtml);
+
+      countMarker.on("click", function () {
+        countMarker.openPopup();
+      });
+    });
+  }
+
+  function renderLatestList(data) {
+    const rankingContainer = document.getElementById("rankingList");
+
+    if (!rankingContainer) {
+      return;
+    }
+
+    if (!data || !data.length) {
+      rankingContainer.innerHTML = `
+        <div class="empty-ranking">
+          No hay reportes registrados hoy para mostrar.
+        </div>
+      `;
+      return;
+    }
+
+    const maxTotal = Math.max(...data.map(item => Number(item.total || 1)), 1);
+
+    rankingContainer.innerHTML = data.slice(0, 8).map((item) => {
+      const total = Number(item.total || 1);
+      const width = Math.max(10, Math.round((total / maxTotal) * 100));
+
+      return `
+        <div class="ranking-item">
+          <div class="ranking-top">
+            <div>
+              <div class="ranking-city">${escapeHtml(item.city || "-")}</div>
+              <div class="ranking-dept">${escapeHtml(item.department || "Sin departamento")}</div>
+            </div>
+
+            <div class="text-end">
+              <div class="ranking-total text-danger">${formatNumber(total)}</div>
+              <span class="risk-badge ${getRiskClass(total)}">${getRiskText(total)}</span>
+            </div>
+          </div>
+
+          <div class="ranking-bottom">
+            <div class="ranking-bar">
+              <div style="width:${width}%"></div>
+            </div>
+
+            <button
+              type="button"
+              class="ranking-btn"
+              onclick="zoomToCity(${Number(item.lat || 0)}, ${Number(item.lng || 0)})"
+            >
+              Ver
+            </button>
+          </div>
+
+          <div class="d-flex justify-content-between mt-2 small text-secondary fw-semibold">
+            <span>Reporte de hoy</span>
+            <span>${escapeHtml(item.ultimo_reporte || "")}</span>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function aplicarPayloadMapa(payload) {
+    currentPayload = Array.isArray(payload)
+      ? buildPayloadFromLegacyArray(payload)
+      : (payload || {});
+
+    const ciudades = currentPayload.ciudades || [];
+    const departamentos = currentPayload.departamentos || [];
+    const ultimos = currentPayload.ultimos || [];
+
+    if (!ciudades.length) {
+      renderEmptyState();
+      return;
+    }
+
+    const statTotalReportadosPais = document.getElementById("statTotalReportadosPais");
+    const statReportesHoy = document.getElementById("statReportesHoy");
+    const statTotalCiudadesPais = document.getElementById("statTotalCiudadesPais");
+    const statTotalDepartamentosPais = document.getElementById("statTotalDepartamentosPais");
+
+    if (statTotalReportadosPais) {
+      statTotalReportadosPais.innerText = formatNumber(currentPayload.total_reportados_pais || 0);
+    }
+
+    if (statReportesHoy) {
+      statReportesHoy.innerText = formatNumber(currentPayload.total_reportes_hoy || 0);
+    }
+
+    if (statTotalCiudadesPais) {
+      statTotalCiudadesPais.innerText = formatNumber(currentPayload.total_ciudades_pais || 0);
+    }
+
+    if (statTotalDepartamentosPais) {
+      statTotalDepartamentosPais.innerText = formatNumber(currentPayload.total_departamentos_pais || 0);
+    }
+
+    renderDepartmentList(departamentos);
+    refreshDepartmentStyles();
+
+    if (selectedDepartment) {
+      pintarDepartamentoSeleccionadoSinZoom(selectedDepartment);
+    } else {
+      const label = document.getElementById("selectedDepartmentLabel");
+
+      if (label) {
+        label.textContent = `Colombia · ${formatNumber(currentPayload.total_reportados_pais || 0)} reportados activos`;
+      }
+
+      renderCityMarkers(ciudades, false);
+      renderLatestList(ultimos);
+    }
+  }
+
+  function cargarReportesMapa() {
+    if (isLoadingMapReports) {
+      return;
+    }
+
+    isLoadingMapReports = true;
+
+    fetch("/api/reportes-mapa?limit=8&_=" + Date.now(), {
+      cache: "no-store"
+    })
+      .then(res => res.json())
+      .then(payload => {
+        aplicarPayloadMapa(payload);
+      })
+      .catch(err => {
+        console.error("Error cargando mapa:", err);
+        renderEmptyState();
+      })
+      .finally(() => {
+        isLoadingMapReports = false;
+      });
+  }
+
+  if (!MAP_DATA_LOCKED) {
+    cargarReportesMapa();
+    setInterval(cargarReportesMapa, 15000);
+  }
+</script>
+
+{% endblock %}

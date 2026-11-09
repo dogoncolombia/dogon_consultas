@@ -1,0 +1,12 @@
+{% macro traffic_light(count) -%}
+{% set color = 'red' if count >= 3 else ('yellow' if count >= 1 else 'green') %}
+{% set label = 'Rojo' if count >= 3 else ('Amarillo' if count >= 1 else 'Verde') %}
+<span class="traffic-indicator">
+<span class="traffic-light traffic-light--{{ color }}" role="img" aria-label="Semáforo {{ label|lower }}">
+  <span class="traffic-bulb traffic-bulb--red" aria-hidden="true"></span>
+  <span class="traffic-bulb traffic-bulb--yellow" aria-hidden="true"></span>
+  <span class="traffic-bulb traffic-bulb--green" aria-hidden="true"></span>
+</span>
+<span class="traffic-caption">{{ count }} {{ 'reporte' if count == 1 else 'reportes' }}</span>
+</span>
+{%- endmacro %}

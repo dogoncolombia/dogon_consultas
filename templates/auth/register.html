@@ -1,0 +1,432 @@
+{% extends "base.html" %}
+{% block title %} | Registro{% endblock %}
+{% block content %}
+
+<style>
+  .auth-card{
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid rgba(148,163,184,.16);
+    border-radius: 28px;
+    box-shadow: 0 24px 60px rgba(15,23,42,.08);
+    padding: 34px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .auth-card::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at top right, rgba(59,130,246,.08), transparent 25%),
+      radial-gradient(circle at bottom left, rgba(245,158,11,.08), transparent 22%);
+    pointer-events: none;
+  }
+
+  .auth-card > *{
+    position: relative;
+    z-index: 2;
+  }
+
+  .auth-title{
+    font-size: 2rem;
+    font-weight: 900;
+    color: #0f172a;
+    margin-bottom: 6px;
+  }
+
+  .auth-subtitle{
+    color: #64748b;
+    margin-bottom: 24px;
+  }
+
+  .price-pill{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 999px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #eff6ff 0%, #fff7ed 100%);
+    border: 1px solid rgba(148,163,184,.18);
+    color: #0f172a;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 20px;
+  }
+
+  .form-label{
+    font-weight: 700;
+    color: #334155;
+  }
+
+  .form-control{
+    border-radius: 16px;
+    border: 1px solid #dbe2ea;
+    box-shadow: none !important;
+    padding: 14px 16px;
+  }
+
+  .form-control:focus{
+    border-color: #3b82f6;
+  }
+
+  .btn-create-account{
+    border: 0;
+    border-radius: 16px;
+    padding: 14px 20px;
+    font-size: 1rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+    color: #fff;
+    box-shadow: 0 18px 35px rgba(249,115,22,.22);
+    transition: .2s ease;
+  }
+
+  .btn-create-account:hover{
+    transform: translateY(-1px);
+    color: #fff;
+  }
+
+  .register-note{
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    font-size: 14px;
+  }
+
+  .register-note strong{
+    color: #0f172a;
+  }
+
+  .pricing-modal .modal-content{
+    border: 0;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 35px 90px rgba(15,23,42,.28);
+    background: #fff;
+  }
+
+  .pricing-left{
+    min-height: 100%;
+    padding: 34px 28px;
+    color: #fff;
+    background:
+      radial-gradient(circle at top left, rgba(255,255,255,.16), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(245,158,11,.22), transparent 34%),
+      linear-gradient(160deg, #0f172a 0%, #1e3a8a 55%, #2563eb 100%);
+  }
+
+  .pricing-badge{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.18);
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    backdrop-filter: blur(8px);
+  }
+
+  .pricing-brand{
+    font-size: 34px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 14px;
+    letter-spacing: -.03em;
+  }
+
+  .pricing-left p{
+    color: rgba(255,255,255,.82);
+    margin-bottom: 24px;
+  }
+
+  .pricing-side-card{
+    background: rgba(255,255,255,.10);
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 14px;
+    backdrop-filter: blur(10px);
+  }
+
+  .pricing-side-card:last-child{
+    margin-bottom: 0;
+  }
+
+  .pricing-side-card .icon{
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.14);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .pricing-side-card h6{
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .pricing-side-card p{
+    margin: 0;
+    font-size: 13px;
+    color: rgba(255,255,255,.74);
+  }
+
+  .pricing-right{
+    padding: 36px 34px 30px;
+    background:
+      radial-gradient(circle at top right, rgba(59,130,246,.08), transparent 22%),
+      linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .pricing-kicker{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #2563eb;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 800;
+    margin-bottom: 18px;
+  }
+
+  .pricing-title{
+    font-size: 2rem;
+    line-height: 1.1;
+    font-weight: 900;
+    color: #0f172a;
+    margin-bottom: 14px;
+  }
+
+  .pricing-text{
+    color: #475569;
+    font-size: 1rem;
+    margin-bottom: 22px;
+  }
+
+  .pricing-check{
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+  }
+
+  .pricing-check label{
+    font-weight: 600;
+    color: #334155;
+  }
+
+  .pricing-actions{
+    margin-top: auto;
+    padding-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .pricing-btn{
+    border: 0;
+    border-radius: 16px;
+    padding: 13px 20px;
+    font-weight: 800;
+    transition: .2s ease;
+  }
+
+  .pricing-btn-primary{
+    background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+    color: #fff;
+    box-shadow: 0 18px 32px rgba(249,115,22,.22);
+  }
+
+  .pricing-btn-primary:disabled{
+    opacity: .6;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 991px){
+    .auth-card{
+      padding: 24px 18px;
+      border-radius: 22px;
+    }
+
+    .pricing-right{
+      padding: 24px 20px;
+    }
+
+    .pricing-title{
+      font-size: 1.65rem;
+    }
+
+    .pricing-actions{
+      flex-direction: column;
+    }
+
+    .pricing-actions button{
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="row justify-content-center">
+  <div class="col-lg-6 col-md-8">
+    <div class="auth-card">
+      <h2 class="auth-title">Únete a la red</h2>
+      <p class="auth-subtitle">Registra tu cuenta para empezar a operar la plataforma.</p>
+
+      <div class="price-pill">
+        <i class="bi bi-wallet2"></i>
+        Recarga inicial: $8.000 &nbsp;•&nbsp; Consulta: $400
+      </div>
+
+      <form method="post" class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Nombre completo</label>
+          <input type="text" name="full_name" class="form-control form-control-lg" required>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Teléfono</label>
+          <input type="text" name="phone" class="form-control form-control-lg">
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Correo</label>
+          <input type="email" name="email" class="form-control form-control-lg" required>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Contraseña</label>
+          <input type="password" name="password" class="form-control form-control-lg" required>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Confirmar contraseña</label>
+          <input type="password" name="confirm_password" class="form-control form-control-lg" required>
+        </div>
+
+        <div class="col-12 d-grid mt-2">
+          <button class="btn btn-create-account btn-lg">Crear cuenta</button>
+        </div>
+      </form>
+
+      <div class="register-note">
+        <strong>Importante:</strong> al crear la cuenta quedará en proceso de activación hasta confirmar la recarga inicial.
+      </div>
+
+      <p class="mt-4 mb-0 text-muted">
+        ¿Ya tienes cuenta? <a href="{{ url_for('login') }}">Ingresa aquí</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade pricing-modal" id="dogonRechargeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-sm-down">
+    <div class="modal-content">
+      <div class="row g-0 h-100">
+        <div class="col-lg-5">
+          <div class="pricing-left h-100">
+            <div class="pricing-badge">
+              <i class="bi bi-shield-lock-fill"></i>
+              Información importante antes de continuar
+            </div>
+
+            <div class="pricing-brand">DOGON</div>
+
+            <p>
+              Antes de registrarte, ten claridad sobre cómo funciona la activación
+              y el saldo inicial de la plataforma.
+            </p>
+
+          
+          </div>
+        </div>
+
+        <div class="col-lg-7">
+          <div class="pricing-right">
+            <div class="pricing-scroll">
+            <div class="pricing-kicker">
+              <i class="bi bi-exclamation-diamond-fill"></i>
+              Léelo antes de registrarte
+            </div>
+
+            <h2 class="pricing-title">¡Estás a un paso de blindar tu negocio! 🛡️</h2>
+
+            <p class="pricing-text">
+              Para hacer efectiva tu cuenta, debes realizar una <strong>recarga inicial de $8.000</strong>.
+              Ese saldo es <strong>100% tuyo</strong> y queda disponible de inmediato para tus consultas.
+              <br><br>
+              <strong>Costo por consulta:</strong> $400 pesos.
+              <br><br>
+              Después del registro, tu cuenta quedará en <strong>pendiente de pago</strong>
+              hasta que se confirme la transferencia.
+              <br><br>
+              <strong>¡Vamos a cuidar nuestros envíos!</strong>
+              
+            </p>
+
+            <div class="pricing-check">
+              <div class="form-check mb-0">
+                <input class="form-check-input" type="checkbox" id="acceptRechargeInfo">
+                <label class="form-check-label" for="acceptRechargeInfo">
+                  Entiendo cómo funciona la activación, la recarga inicial de $8.000 y el costo por consulta de $400.
+                </label>
+              </div>
+            </div>
+
+            </div>
+            <div class="pricing-actions">
+              <button type="button" class="pricing-btn pricing-btn-primary" id="continueRegisterBtn" disabled>
+                Entendido, quiero continuar <i class="bi bi-arrow-right ms-1"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const modalEl = document.getElementById("dogonRechargeModal");
+    const acceptCheck = document.getElementById("acceptRechargeInfo");
+    const continueBtn = document.getElementById("continueRegisterBtn");
+
+    if (!modalEl || typeof bootstrap === "undefined") return;
+
+    const rechargeModal = new bootstrap.Modal(modalEl, {
+      backdrop: "static",
+      keyboard: false
+    });
+
+    acceptCheck.addEventListener("change", function () {
+      continueBtn.disabled = !this.checked;
+    });
+
+    continueBtn.addEventListener("click", function () {
+      rechargeModal.hide();
+    });
+
+    rechargeModal.show();
+  });
+</script>
+
+{% endblock %}

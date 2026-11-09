@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+{% block title %} | Saldo{% endblock %}
+{% block content %}
+
+{% macro money_sin_decimales(value) -%}
+{{ "{:,.0f}".format(value|float).replace(",", ".") }}
+{%- endmacro %}
+
+<style>
+  .bank-recharge-card{
+    position: relative;
+    overflow: hidden;
+    border-radius: 28px;
+    border: 1px solid rgba(148,163,184,.14);
+    background:
+      radial-gradient(circle at top right, rgba(59,130,246,.10), transparent 28%),
+      radial-gradient(circle at bottom left, rgba(14,165,233,.08), transparent 24%),
+      linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    box-shadow: 0 24px 55px rgba(15,23,42,.10);
+    padding: 28px;
+  }
+
+  .bank-recharge-card::before{
+    content: "";
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 180px;
+    height: 180px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(37,99,235,.14), rgba(56,189,248,.10));
+    filter: blur(8px);
+  }
+
+  .bank-kicker{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    border: 1px solid #dbeafe;
+    position: relative;
+    z-index: 2;
+  }
+
+  .bank-title{
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #0f172a;
+    margin-bottom: 8px;
+    line-height: 1.1;
+    position: relative;
+    z-index: 2;
+  }
+
+  .bank-text{
+    color: #64748b;
+    font-size: .98rem;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .bank-input-wrap{
+    position: relative;
+    z-index: 2;
+  }
+
+  .bank-currency{
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 900;
+    color: #0f172a;
+    font-size: 1.1rem;
+    z-index: 3;
+  }
+
+  .bank-input{
+    height: 64px;
+    border-radius: 18px;
+    border: 1px solid rgba(148,163,184,.22);
+    background: #ffffff;
+    padding-left: 42px;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #0f172a;
+    box-shadow: inset 0 1px 2px rgba(15,23,42,.03);
+  }
+
+  .bank-input:focus{
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 .20rem rgba(59,130,246,.14);
+  }
+
+  .bank-help-row{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .bank-amount-chip{
+    border: 0;
+    border-radius: 999px;
+    padding: 10px 14px;
+    background: #f1f5f9;
+    color: #0f172a;
+    font-size: 13px;
+    font-weight: 800;
+    transition: .2s ease;
+  }
+
+  .bank-amount-chip:hover{
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  .bank-submit{
+    height: 58px;
+    border: 0;
+    border-radius: 18px;
+    font-weight: 900;
+    font-size: 1rem;
+    color: #fff;
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 45%, #0ea5e9 100%);
+    box-shadow: 0 20px 35px rgba(37,99,235,.22);
+    transition: .2s ease;
+    position: relative;
+    z-index: 2;
+  }
+
+  .bank-submit:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 24px 40px rgba(37,99,235,.28);
+  }
+
+  .bank-note{
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid rgba(148,163,184,.16);
+    color: #475569;
+    font-size: .94rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .bank-note strong{
+    color: #0f172a;
+  }
+
+  .bank-alert{
+    margin-top: 18px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #fff7ed 0%, #fff 100%);
+    border: 1px solid #fed7aa;
+    padding: 16px 18px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .bank-alert-title{
+    font-weight: 900;
+    color: #9a3412;
+    margin-bottom: 4px;
+  }
+
+  .bank-alert-text{
+    color: #7c2d12;
+    margin-bottom: 0;
+    font-size: .95rem;
+  }
+
+  .bank-alert a{
+    color: #c2410c;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  @media (max-width: 768px){
+    .bank-recharge-card{
+      padding: 22px 18px;
+      border-radius: 24px;
+    }
+
+    .bank-title{
+      font-size: 1.35rem;
+    }
+
+    .bank-input{
+      height: 58px;
+      font-size: 1rem;
+    }
+
+    .bank-submit{
+      height: 54px;
+    }
+  }
+</style>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="metric-card h-100">
+      <small>Saldo actual</small>
+      <h2>$ {{ money_sin_decimales(wallet_balance) }}</h2>
+      <p>Usa esta bolsa para realizar consultas y gestionar futuras recargas aprobadas por administración.</p>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="bank-recharge-card h-100">
+      <div class="bank-kicker">
+        <i class="bi bi-bank2"></i>
+        Recarga segura
+      </div>
+
+      <h5 class="bank-title">Recargar saldo</h5>
+
+      <p class="bank-text">
+        Solicita una recarga y confirma tu pago para que el valor sea validado y abonado a tu cuenta.
+      </p>
+
+      <form method="post" action="{{ url_for('solicitar_recarga_wallet') }}" class="d-grid gap-3">
+        <div class="bank-input-wrap">
+          <span class="bank-currency">$</span>
+          <input
+            type="number"
+            min="5000"
+            step="1"
+            name="amount"
+            id="amount"
+            class="form-control bank-input"
+            placeholder="Valor a recargar"
+            required
+          >
+        </div>
+
+        <div class="bank-help-row">
+          <button type="button" class="bank-amount-chip" onclick="setRechargeAmount(8000)">$8.000</button>
+          <button type="button" class="bank-amount-chip" onclick="setRechargeAmount(16000)">$16.000</button>
+          <button type="button" class="bank-amount-chip" onclick="setRechargeAmount(32000)">$32.000</button>
+          <button type="button" class="bank-amount-chip" onclick="setRechargeAmount(64000)">$64.000</button>
+        </div>
+
+        <button class="bank-submit">
+          <i class="bi bi-whatsapp me-2"></i>
+          Confirmar solicitud de recarga
+        </button>
+      </form>
+
+      <div class="bank-note">
+        <strong>Importante:</strong> la solicitud quedará pendiente hasta que se confirme tu pago y sea aprobada por administración.
+      </div>
+
+      {% if pending_recharges %}
+      <div class="bank-alert">
+        <div class="bank-alert-title">
+          <i class="bi bi-clock-history me-2"></i>
+          Tienes una solicitud pendiente
+        </div>
+        <p class="bank-alert-text">
+          Ya existe una recarga en proceso de validación.
+          <a href="{{ url_for('wallet_recarga_pendiente', recarga_id=pending_recharges[0].id) }}">
+            Ver estado actual
+          </a>
+        </p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="panel-card mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Historial de movimientos</h5>
+    <span class="badge text-bg-light">{{ transactions | length }} registros</span>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Tipo</th>
+          <th>Descripción</th>
+          <th>Referencia</th>
+          <th class="text-end">Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in transactions %}
+        <tr>
+          <td>{{ item.created_at[:16].replace('T', ' ') }}</td>
+          <td><span class="badge text-bg-secondary">{{ item.transaction_type }}</span></td>
+          <td>{{ item.description or '-' }}</td>
+          <td>{{ item.reference or '-' }}</td>
+          <td class="text-end fw-semibold {{ 'text-success' if item.amount|float >= 0 else 'text-danger' }}">
+            $ {{ money_sin_decimales(item.amount) }}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="text-center text-muted py-4">Aún no hay movimientos.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  function setRechargeAmount(value) {
+    const input = document.getElementById('amount');
+    if (input) {
+      input.value = value;
+      input.focus();
+    }
+  }
+</script>
+
+{% endblock %}

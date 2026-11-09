@@ -1,0 +1,140 @@
+:root {
+  --bg: #0f172a;
+  --bg-soft: #111827;
+  --primary: #2563eb;
+  --primary-2: #0ea5e9;
+  --card-shadow: 0 20px 40px rgba(2, 6, 23, 0.08);
+}
+
+body {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.app-navbar {
+  background: linear-gradient(135deg, #0f172a, #1d4ed8);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
+}
+
+.hero-section {
+  background: radial-gradient(circle at top left, rgba(14, 165, 233, 0.35), transparent 28%),
+              linear-gradient(135deg, #0f172a, #1d4ed8 55%, #0ea5e9);
+  box-shadow: var(--card-shadow);
+}
+.map-badge {
+  background: red;
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+.eyebrow {
+  display: inline-block;
+  background: rgba(255,255,255,.12);
+  color: #e2e8f0;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  padding: .55rem .9rem;
+  font-size: .85rem;
+}
+
+.glass-card {
+  border-radius: 1.25rem;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.16);
+  backdrop-filter: blur(12px);
+}
+
+.feature-card,
+.auth-card,
+.panel-card,
+.metric-card {
+  background: #fff;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.auth-card {
+  padding: 2rem;
+}
+
+.metric-card {
+  background: linear-gradient(135deg, #0f172a, #2563eb);
+  color: #fff;
+}
+
+.metric-card.light {
+  background: #fff;
+  color: #0f172a;
+}
+
+.metric-card small {
+  color: rgba(255,255,255,.75);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.metric-card.light small {
+  color: #64748b;
+}
+
+.metric-card h2 {
+  font-size: 2rem;
+  margin: .5rem 0;
+  font-weight: 800;
+}
+
+.icon-box {
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--primary);
+  font-size: 1.35rem;
+  margin-bottom: 1rem;
+}
+
+.list-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .95rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.list-row:last-child {
+  border-bottom: none;
+}
+
+.small-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.form-control,
+.btn {
+  border-radius: .95rem;
+}
+
+.table th {
+  color: #64748b;
+  font-size: .85rem;
+}
+
+@media (max-width: 991.98px) {
+  .hero-section .display-5 {
+    font-size: 2.2rem;
+  }
+}

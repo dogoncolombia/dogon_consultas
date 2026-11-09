@@ -1,0 +1,637 @@
+{% extends "base.html" %}
+{% block title %} | Reportes negativos{% endblock %}
+{% block content %}
+
+<style>
+  .report-page-title{
+    font-size: 1.7rem;
+    font-weight: 900;
+    color: #0f172a;
+    margin-bottom: .25rem;
+    letter-spacing: -.03em;
+  }
+
+  .report-page-subtitle{
+    color: #64748b;
+    margin-bottom: 0;
+  }
+
+  .report-grid{
+    align-items: stretch;
+  }
+
+  .report-form-card,
+  .report-list-card{
+    border-radius: 24px;
+    background: #ffffff;
+    border: 1px solid rgba(226,232,240,.9);
+    box-shadow: 0 18px 45px rgba(15,23,42,.07);
+    overflow: hidden;
+  }
+
+  .report-card-header{
+    padding: 20px 22px;
+    border-bottom: 1px solid #e2e8f0;
+    background:
+      radial-gradient(circle at top right, rgba(59,130,246,.12), transparent 34%),
+      linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  }
+
+  .report-card-body{
+    padding: 22px;
+  }
+
+  .report-note-card{
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    padding: 18px;
+    margin-bottom: 18px;
+    background:
+      radial-gradient(circle at top right, rgba(59,130,246,.10), transparent 30%),
+      linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid rgba(148,163,184,.22);
+  }
+
+  .report-note-kicker{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: 7px 12px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: 12px;
+  }
+
+  .report-note-title{
+    font-size: 17px;
+    font-weight: 900;
+    color: #0f172a;
+    margin-bottom: 10px;
+    line-height: 1.25;
+  }
+
+  .report-message-preview{
+    background: #f8fafc;
+    border: 1px solid rgba(226,232,240,.95);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+
+  .report-message-label{
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 800;
+    letter-spacing: .05em;
+    margin-bottom: 8px;
+  }
+
+  .report-message-text{
+    color: #0f172a;
+    font-size: 14px;
+    line-height: 1.55;
+    font-weight: 600;
+  }
+
+  .report-note-actions{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .copy-protocol-btn{
+    border-radius: 14px;
+    font-weight: 800;
+    padding: 11px 16px;
+    border: 0;
+  }
+
+  .copy-feedback{
+    display: none;
+    color: #15803d;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .copy-feedback.show{
+    display: inline-block;
+  }
+
+  .form-label{
+    color: #334155;
+    font-weight: 800;
+    font-size: 13px;
+    margin-bottom: 7px;
+  }
+
+  .form-control,
+  .form-select{
+    border-radius: 15px;
+    border-color: #dbe3ef;
+    font-size: 15px;
+  }
+
+  .form-control:focus,
+  .form-select:focus{
+    border-color: #2563eb;
+    box-shadow: 0 0 0 .2rem rgba(37,99,235,.12);
+  }
+
+  .form-soft-note{
+    border-radius: 16px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    color: #475569;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .upload-soft-box{
+    border: 1px dashed #93c5fd;
+    background: #eff6ff;
+    border-radius: 18px;
+    padding: 15px;
+  }
+
+  .upload-soft-box small{
+    display: block;
+    color: #1d4ed8;
+    font-weight: 700;
+    margin-top: 6px;
+  }
+
+  .record-pill{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: 8px 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .section-mini-note{
+    border-radius: 16px;
+    padding: 13px 15px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1d4ed8;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .reports-table-wrap{
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #ffffff;
+  }
+
+  .custom-table{
+    margin-bottom: 0;
+  }
+
+  .custom-table thead th{
+    background: #f8fafc;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #64748b;
+    font-weight: 900;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 13px 14px;
+    white-space: nowrap;
+  }
+
+  .custom-table tbody td{
+    vertical-align: middle;
+    padding: 14px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+  }
+
+  .custom-table tbody tr:last-child td{
+    border-bottom: 0;
+  }
+
+  .report-person{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 170px;
+  }
+
+  .report-person-name{
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .report-person-address,
+  .report-muted-text{
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.35;
+  }
+
+  .reason-chip{
+    display: inline-flex;
+    max-width: 180px;
+    border-radius: 999px;
+    padding: 7px 11px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .date-box{
+    font-size: 12px;
+    color: #475569;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 991px){
+    .report-note-actions{
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .copy-feedback{
+      display: block;
+    }
+  }
+</style>
+
+{% set protocol_message = "Te recordamos que nuestra tienda está protegida por la Red DOGON; el incumplimiento injustificado en la recepción será reportado en la Central de Riesgos DOGON." %}
+
+<div class="mb-4">
+  <div class="report-page-title">Reportes negativos</div>
+  <p class="report-page-subtitle">
+    Registra incidencias con información clara, ubicación correcta y contexto suficiente para una mejor validación.
+  </p>
+</div>
+
+<div class="row g-4 report-grid">
+  <div class="col-lg-5">
+    <div class="report-form-card h-100">
+      <div class="report-card-header">
+        <h3 class="fw-bold mb-1">Registrar reporte negativo</h3>
+        <p class="text-muted mb-0 small">Completa la información del cliente y adjunta la guía si aplica.</p>
+      </div>
+
+      <div class="report-card-body">
+        <div class="report-note-card">
+          <div class="report-note-kicker">
+            <i class="bi bi-info-circle-fill"></i>
+            Nota importante
+          </div>
+
+          <div class="report-note-title">
+            Antes de registrar un reporte, recuerda informar al cliente sobre el posible reporte.
+          </div>
+
+          <div class="report-message-preview">
+            <div class="report-message-label">Mensaje sugerido</div>
+            <div class="report-message-text" id="protocolMessagePreview">
+              {{ protocol_message }}
+            </div>
+          </div>
+
+          <div class="report-note-actions">
+            <button type="button" class="btn btn-primary copy-protocol-btn" id="copyProtocolBtn">
+              <i class="bi bi-clipboard-check me-2"></i>Copiar mensaje sugerido
+            </button>
+
+            <span class="copy-feedback" id="copyProtocolFeedback">
+              Mensaje copiado correctamente.
+            </span>
+          </div>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        {% if success %}
+        <div class="alert alert-success">{{ success }}</div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Nombre completo</label>
+            <input type="text" name="target_name" class="form-control form-control-lg"
+                   value="{{ form_data.target_name }}" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Teléfono</label>
+            <input type="text" name="phone" class="form-control form-control-lg"
+                   value="{{ form_data.phone }}" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Motivo</label>
+            <input type="text" name="reason" class="form-control form-control-lg"
+                   value="{{ form_data.reason }}" required>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Dirección</label>
+            <input type="text" name="address" class="form-control form-control-lg"
+                   value="{{ form_data.address }}" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Departamento</label>
+            <select name="department" id="department" class="form-select form-select-lg" required>
+              <option value="">Seleccione...</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Ciudad</label>
+            <select name="city" id="city" class="form-select form-select-lg" required>
+              <option value="">Seleccione primero un departamento</option>
+            </select>
+          </div>
+
+          <input type="hidden" name="lat" id="lat" value="{{ form_data.lat if form_data.lat is defined else '' }}">
+          <input type="hidden" name="lng" id="lng" value="{{ form_data.lng if form_data.lng is defined else '' }}">
+
+          <div class="col-12">
+            <label class="form-label">Detalle</label>
+            <textarea name="details" rows="4" class="form-control">{{ form_data.details }}</textarea>
+          </div>
+
+          <div class="col-12">
+            <div class="upload-soft-box">
+              <label class="form-label mb-2">
+                <i class="bi bi-paperclip me-1"></i>
+                Adjuntar guía
+              </label>
+              <input type="file" name="adjuntar_guia" class="form-control">
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="form-soft-note">
+              <i class="bi bi-shield-check me-2"></i>
+              Verifica que el nombre, teléfono, dirección y ubicación queden correctamente diligenciados antes de guardar el reporte.
+            </div>
+          </div>
+
+          <div class="col-12 d-grid">
+            <button class="btn btn-primary btn-lg rounded-4 fw-bold">
+              <i class="bi bi-save me-2"></i>
+              Guardar reporte
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="report-list-card h-100">
+      <div class="report-card-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <div>
+            <h3 class="fw-bold mb-1">Últimos reportes</h3>
+            <p class="text-muted mb-0 small">Historial reciente de incidencias registradas.</p>
+          </div>
+
+          <span class="record-pill">
+            <i class="bi bi-clock-history"></i>
+            {{ reports | length }} registros
+          </span>
+        </div>
+      </div>
+
+      <div class="report-card-body">
+        <div class="section-mini-note">
+          <i class="bi bi-lightbulb-fill me-2"></i>
+          Mantén cada reporte lo más claro posible para facilitar la revisión del historial comercial.
+        </div>
+
+        <div class="reports-table-wrap">
+          <div class="table-responsive">
+            <table class="table align-middle custom-table">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Contacto</th>
+                  <th>Ubicación</th>
+                  <th>Motivo</th>
+                  <th>Estado</th>
+                  <th>Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in reports %}
+                <tr>
+                  <td>
+                    <div class="report-person">
+                      <span class="report-person-name">{{ item.target_name }}</span>
+                      {% if item.address %}
+                      <span class="report-person-address">{{ item.address }}</span>
+                      {% endif %}
+                    </div>
+                  </td>
+
+                  <td>
+                    <div class="fw-bold text-dark">{{ item.phone or '-' }}</div>
+                  </td>
+
+                  <td>
+                    <div class="fw-semibold">{{ item.city or '-' }}</div>
+                    {% if item.department %}
+                    <div class="report-muted-text">{{ item.department }}</div>
+                    {% endif %}
+                  </td>
+
+                  <td>
+                    <span class="reason-chip" title="{{ item.reason }}">
+                      {{ item.reason }}
+                    </span>
+                  </td>
+
+                  <td>
+                    <span class="badge rounded-pill px-3 py-2 {% if item.status == 'activo' %}text-bg-danger{% else %}text-bg-secondary{% endif %}">
+                      {{ item.status }}
+                    </span>
+                  </td>
+
+                  <td>
+                    <span class="date-box">
+                      {{ item.created_at[:16].replace('T', ' ') }}
+                    </span>
+                  </td>
+                </tr>
+                {% else %}
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-5">
+                    <i class="bi bi-inbox d-block fs-3 mb-2"></i>
+                    No hay reportes registrados.
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const protocolMessage = {{ protocol_message|tojson }};
+  const copyBtn = document.getElementById("copyProtocolBtn");
+  const copyFeedback = document.getElementById("copyProtocolFeedback");
+
+  function showCopyFeedback() {
+    if (!copyFeedback) return;
+    copyFeedback.classList.add("show");
+    setTimeout(() => {
+      copyFeedback.classList.remove("show");
+    }, 2200);
+  }
+
+  function fallbackCopy(text) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "absolute";
+    textarea.style.left = "-9999px";
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
+  }
+
+  async function copyProtocolMessage() {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(protocolMessage);
+      } else {
+        fallbackCopy(protocolMessage);
+      }
+      showCopyFeedback();
+    } catch (error) {
+      fallbackCopy(protocolMessage);
+      showCopyFeedback();
+    }
+  }
+
+  if (copyBtn) {
+    copyBtn.addEventListener("click", copyProtocolMessage);
+  }
+
+  const selectedDepartment = {{ form_data.department|tojson }};
+  const selectedCity = {{ form_data.city|tojson }};
+
+  const departmentSelect = document.getElementById("department");
+  const citySelect = document.getElementById("city");
+  const latInput = document.getElementById("lat");
+  const lngInput = document.getElementById("lng");
+
+  fetch("{{ url_for('static', filename='data/colombia_city_coords.json') }}")
+    .then(res => res.json())
+    .then(coords => {
+      const departments = Object.keys(coords).sort((a, b) => a.localeCompare(b, "es"));
+
+      departmentSelect.innerHTML = '<option value="">Seleccione...</option>';
+
+      departments.forEach(dep => {
+        const option = document.createElement("option");
+        option.value = dep;
+        option.textContent = dep;
+        if (dep === selectedDepartment) option.selected = true;
+        departmentSelect.appendChild(option);
+      });
+
+      function updateCoords(dep, city) {
+        latInput.value = "";
+        lngInput.value = "";
+
+        if (coords[dep] && coords[dep][city]) {
+          latInput.value = coords[dep][city].lat ?? "";
+          lngInput.value = coords[dep][city].lng ?? "";
+        }
+
+        console.log("Departamento:", dep);
+        console.log("Ciudad:", city);
+        console.log("Lat:", latInput.value);
+        console.log("Lng:", lngInput.value);
+      }
+
+      function loadCities(department, preselected = "") {
+        citySelect.innerHTML = "";
+        latInput.value = "";
+        lngInput.value = "";
+
+        if (!department || !coords[department]) {
+          citySelect.innerHTML = '<option value="">Seleccione primero un departamento</option>';
+          return;
+        }
+
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Seleccione...";
+        citySelect.appendChild(defaultOption);
+
+        const cities = Object.keys(coords[department]).sort((a, b) => a.localeCompare(b, "es"));
+
+        cities.forEach(city => {
+          const option = document.createElement("option");
+          option.value = city;
+          option.textContent = city;
+          if (city === preselected) option.selected = true;
+          citySelect.appendChild(option);
+        });
+
+        if (preselected) {
+          updateCoords(department, preselected);
+        }
+      }
+
+      if (selectedDepartment) {
+        loadCities(selectedDepartment, selectedCity);
+      }
+
+      departmentSelect.addEventListener("change", function () {
+        loadCities(this.value);
+      });
+
+      citySelect.addEventListener("change", function () {
+        updateCoords(departmentSelect.value, this.value);
+      });
+    })
+    .catch(error => {
+      console.error("Error cargando coordenadas:", error);
+      citySelect.innerHTML = '<option value="">No se pudo cargar la lista</option>';
+    });
+});
+</script>
+
+{% endblock %}

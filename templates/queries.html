@@ -1,0 +1,1203 @@
+{% extends "base.html" %}
+{% block title %} | Consultas{% endblock %}
+{% block content %}
+{% from '_traffic_light.html' import traffic_light %}
+
+{% macro money_sin_decimales(value) -%}
+{{ "{:,.0f}".format(value|float).replace(",", ".") }}
+{%- endmacro %}
+
+<style>
+  .query-hero-card{
+    border-radius: 24px;
+    padding: 28px;
+    background:
+      radial-gradient(circle at top right, rgba(59,130,246,.12), transparent 28%),
+      radial-gradient(circle at bottom left, rgba(239,68,68,.08), transparent 30%),
+      linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid rgba(148,163,184,.18);
+    box-shadow: 0 14px 35px rgba(15,23,42,.08);
+  }
+
+  .query-search-box{
+    background: #fff;
+    border-radius: 18px;
+    padding: 16px;
+    border: 1px solid rgba(148,163,184,.16);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+    height: 100%;
+  }
+
+  .query-stat-card{
+    background: #fff;
+    border-radius: 20px;
+    padding: 18px;
+    border: 1px solid rgba(148,163,184,.14);
+    box-shadow: 0 10px 24px rgba(15,23,42,.05);
+    height: 100%;
+  }
+
+  .query-stat-label{
+    font-size: 12px;
+    color: #64748b;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: .04em;
+    margin-bottom: 8px;
+  }
+
+  .query-stat-value{
+    font-size: 28px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+  }
+
+  .query-stat-helper{
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 10px;
+  }
+
+  .protocol-side-card{
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    border-radius: 22px;
+    padding: 18px;
+    border: 1px solid rgba(30,41,59,.35);
+    box-shadow: 0 16px 36px rgba(15,23,42,.18);
+    color: #fff;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .protocol-side-card::before{
+    content: "";
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    border-radius: 999px;
+    top: -55px;
+    right: -40px;
+    background: radial-gradient(circle, rgba(37,99,235,.34) 0%, rgba(37,99,235,0) 70%);
+    pointer-events: none;
+  }
+
+  .protocol-kicker{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: 7px 12px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.10);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .protocol-side-title{
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .protocol-side-text{
+    color: rgba(255,255,255,.78);
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .protocol-mini-bubble{
+    position: relative;
+    z-index: 1;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 18px;
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
+  .protocol-mini-bubble .label{
+    font-size: 11px;
+    color: #93c5fd;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: .05em;
+    margin-bottom: 8px;
+  }
+
+  .protocol-mini-bubble .text{
+    font-size: 13px;
+    line-height: 1.5;
+    color: #fff;
+  }
+
+  .protocol-copy-btn{
+    border-radius: 14px;
+    font-weight: 800;
+    padding: 12px 16px;
+    border: 0;
+    width: 100%;
+  }
+
+  .result-card{
+    background: #fff;
+    border-radius: 22px;
+    border: 1px solid rgba(148,163,184,.16);
+    box-shadow: 0 14px 35px rgba(15,23,42,.08);
+    overflow: hidden;
+  }
+
+  .result-card-header{
+    padding: 22px 22px 16px 22px;
+    border-bottom: 1px solid rgba(226,232,240,.8);
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  }
+
+  .result-card-body{
+    padding: 22px;
+  }
+
+  .result-avatar{
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #fff;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    box-shadow: 0 8px 18px rgba(15,23,42,.18);
+  }
+
+  .risk-badge{
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .risk-high{
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+  }
+
+  .risk-low{
+    background: #ecfdf5;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+  }
+
+  .risk-medium{
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fdba74;
+  }
+
+  .summary-grid{
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .summary-box{
+    background: #f8fafc;
+    border: 1px solid rgba(226,232,240,.9);
+    border-radius: 16px;
+    padding: 14px;
+  }
+
+  .summary-box .label{
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 800;
+    margin-bottom: 6px;
+    letter-spacing: .04em;
+  }
+
+  .summary-box .value{
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+  }
+
+  .info-grid{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .info-item{
+    background: #f8fafc;
+    border: 1px solid rgba(226,232,240,.9);
+    border-radius: 16px;
+    padding: 14px;
+  }
+
+  .info-label{
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 800;
+    letter-spacing: .04em;
+    margin-bottom: 6px;
+  }
+
+  .info-value{
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.35;
+    word-break: break-word;
+  }
+
+  .report-box{
+    border-radius: 18px;
+    padding: 18px;
+    border: 1px solid rgba(248,113,113,.18);
+    background: linear-gradient(180deg, #fff5f5 0%, #fff 100%);
+  }
+
+  .report-box-success{
+    border-radius: 18px;
+    padding: 18px;
+    border: 1px solid rgba(34,197,94,.18);
+    background: linear-gradient(180deg, #f0fdf4 0%, #fff 100%);
+  }
+
+  .report-title{
+    font-size: 15px;
+    font-weight: 800;
+    color: #991b1b;
+    margin-bottom: 12px;
+  }
+
+  .timeline-item{
+    border-left: 2px solid #fecaca;
+    padding-left: 14px;
+    margin-bottom: 16px;
+  }
+
+  .timeline-item:last-child{
+    margin-bottom: 0;
+  }
+
+  .timeline-top{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+
+  .timeline-reason{
+    font-weight: 800;
+    color: #0f172a;
+    font-size: 14px;
+  }
+
+  .timeline-date{
+    font-size: 12px;
+    color: #b91c1c;
+    font-weight: 700;
+  }
+
+  .timeline-detail{
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 6px;
+  }
+
+  .empty-query-card{
+    background: #fff;
+    border-radius: 22px;
+    padding: 40px 24px;
+    border: 1px solid rgba(148,163,184,.16);
+    box-shadow: 0 14px 35px rgba(15,23,42,.05);
+  }
+
+  .summary-strip{
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .summary-pill{
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .dogon-modal .modal-content{
+    border: 0;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(15,23,42,.30);
+  }
+
+  .dogon-modal-header{
+    padding: 24px 24px 14px 24px;
+    background:
+      radial-gradient(circle at top right, rgba(59,130,246,.10), transparent 30%),
+      linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border-bottom: 1px solid rgba(226,232,240,.8);
+  }
+
+  .dogon-modal-kicker{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fdba74;
+    padding: 7px 12px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-bottom: 12px;
+  }
+
+  .dogon-modal-title{
+    font-size: 28px;
+    font-weight: 900;
+    color: #0f172a;
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+
+  .dogon-modal-text{
+    color: #475569;
+    margin-bottom: 0;
+    font-size: 15px;
+  }
+
+  .dogon-modal-body{
+    padding: 24px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  }
+
+  .whatsapp-demo-wrap{
+    background: #e5ddd5;
+    border-radius: 24px;
+    padding: 16px;
+    border: 1px solid rgba(148,163,184,.18);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .whatsapp-demo-wrap::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: .16;
+    background-image:
+      radial-gradient(circle at 20px 20px, #cfd8dc 2px, transparent 2px),
+      radial-gradient(circle at 70px 60px, #cfd8dc 2px, transparent 2px),
+      radial-gradient(circle at 120px 30px, #cfd8dc 2px, transparent 2px);
+    background-size: 160px 120px;
+    pointer-events: none;
+  }
+
+  .whatsapp-topbar{
+    position: relative;
+    z-index: 1;
+    background: #075e54;
+    color: #fff;
+    border-radius: 18px 18px 14px 14px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .wa-avatar{
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .wa-name{
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .wa-status{
+    font-size: 12px;
+    color: rgba(255,255,255,.78);
+  }
+
+  .whatsapp-chat{
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 260px;
+    padding: 6px 2px 4px;
+  }
+
+  .wa-row{
+    display: flex;
+  }
+
+  .wa-row.left{
+    justify-content: flex-start;
+  }
+
+  .wa-row.right{
+    justify-content: flex-end;
+  }
+
+  .wa-bubble{
+    max-width: 82%;
+    border-radius: 18px;
+    padding: 12px 14px 18px 14px;
+    position: relative;
+    font-size: 14px;
+    line-height: 1.45;
+    box-shadow: 0 8px 18px rgba(15,23,42,.08);
+  }
+
+  .wa-bubble.left{
+    background: #fff;
+    color: #0f172a;
+    border-top-left-radius: 6px;
+  }
+
+  .wa-bubble.right{
+    background: #dcf8c6;
+    color: #0f172a;
+    border-top-right-radius: 6px;
+  }
+
+  .wa-time{
+    position: absolute;
+    right: 12px;
+    bottom: 6px;
+    font-size: 11px;
+    color: #64748b;
+  }
+
+  .dogon-copy-area{
+    margin-top: 18px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .dogon-copy-btn{
+    border-radius: 14px;
+    font-weight: 800;
+    padding: 12px 18px;
+    border: 0;
+  }
+
+  .dogon-copy-note{
+    flex: 1 1 220px;
+    border-radius: 14px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    padding: 12px 14px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .dogon-recommendation{
+    margin-top: 18px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #fff7ed 0%, #fff 100%);
+    border: 1px solid #fdba74;
+    padding: 16px;
+  }
+
+  .dogon-recommendation-title{
+    font-weight: 900;
+    color: #9a3412;
+    margin-bottom: 8px;
+  }
+
+  .dogon-recommendation-text{
+    color: #7c2d12;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 0;
+  }
+
+  .copy-feedback{
+    display: none;
+    margin-top: 10px;
+    color: #15803d;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .copy-feedback.show{
+    display: block;
+  }
+
+  .query-loading-overlay{
+    position: fixed;
+    inset: 0;
+    z-index: 2050;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(248,250,252,.74);
+    backdrop-filter: blur(12px);
+  }
+
+  .query-loading-overlay.show{
+    display: flex;
+  }
+
+  .query-loading-card{
+    width: min(390px, 100%);
+    border-radius: 28px;
+    padding: 28px 24px;
+    background: rgba(255,255,255,.96);
+    border: 1px solid rgba(148,163,184,.22);
+    box-shadow: 0 28px 80px rgba(15,23,42,.22);
+    text-align: center;
+  }
+
+  .query-loading-orb{
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    margin: 0 auto 18px;
+    position: relative;
+    background:
+      radial-gradient(circle at 35% 32%, #fff 0 10%, transparent 12%),
+      linear-gradient(135deg, #0f172a 0%, #2563eb 58%, #60a5fa 100%);
+    box-shadow: 0 18px 38px rgba(37,99,235,.32);
+    animation: queryOrbPulse 1.05s ease-in-out infinite;
+  }
+
+  .query-loading-orb::before{
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: inherit;
+    border: 3px solid rgba(37,99,235,.18);
+    border-top-color: #2563eb;
+    animation: queryOrbSpin .82s linear infinite;
+  }
+
+  .query-loading-title{
+    color: #0f172a;
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+
+  .query-loading-text{
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 0;
+  }
+
+  @keyframes queryOrbSpin{
+    to{ transform: rotate(360deg); }
+  }
+
+  @keyframes queryOrbPulse{
+    0%, 100%{ transform: scale(1); }
+    50%{ transform: scale(1.06); }
+  }
+
+  @media (max-width: 992px){
+    .summary-grid{
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 768px){
+    .info-grid,
+    .summary-grid{
+      grid-template-columns: 1fr;
+    }
+
+    .dogon-modal-title{
+      font-size: 24px;
+    }
+
+    .wa-bubble{
+      max-width: 92%;
+    }
+  }
+</style>
+
+<div class="query-hero-card mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Módulo de consultas</h2>
+      <p class="text-muted mb-0">
+        Consulta antecedentes de clientes reportados por incumplimiento.
+        Cada consulta descuenta automáticamente <strong>$ {{ money_sin_decimales(query_cost) }} COP</strong>.
+      </p>
+    </div>
+    <span class="badge rounded-pill text-bg-primary px-3 py-2 fs-6">
+      Costo por consulta: $ {{ money_sin_decimales(query_cost) }}
+    </span>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-md-4">
+      <div class="query-stat-card">
+        <div class="query-stat-label">Filtro 1</div>
+        <div class="query-stat-value" style="font-size:22px;">Cédula</div>
+        <div class="query-stat-helper">Consulta por número completo o parcial.</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="query-stat-card">
+        <div class="query-stat-label">Filtro 2</div>
+        <div class="query-stat-value" style="font-size:22px;">Teléfono</div>
+        <div class="query-stat-helper">Cruza coincidencias con el número registrado.</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="query-stat-card">
+        <div class="query-stat-label">Filtro 3</div>
+        <div class="query-stat-value" style="font-size:22px;">Nombre completo</div>
+        <div class="query-stat-helper">Puedes combinarlo con cédula o teléfono.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 align-items-stretch">
+    <div class="col-xl-8">
+      <div class="query-search-box">
+        <form method="post" class="row g-3 align-items-end" id="dogonSearchForm">
+          <div class="col-md-6 col-xl-4">
+            <label class="form-label fw-semibold text-muted small mb-2">Cédula</label>
+            <input
+              type="text"
+              name="document"
+              class="form-control form-control-lg"
+              value="{{ search_filters.document if search_filters is defined else '' }}"
+              placeholder="Ejemplo: 1001001001"
+              inputmode="numeric"
+            >
+          </div>
+          <div class="col-md-6 col-xl-4">
+            <label class="form-label fw-semibold text-muted small mb-2">Número de teléfono</label>
+            <input
+              type="text"
+              name="phone"
+              class="form-control form-control-lg"
+              value="{{ search_filters.phone if search_filters is defined else '' }}"
+              placeholder="Ejemplo: 3001112233"
+              inputmode="tel"
+            >
+          </div>
+          <div class="col-xl-4">
+            <label class="form-label fw-semibold text-muted small mb-2">Nombre completo</label>
+            <input
+              type="text"
+              name="full_name"
+              class="form-control form-control-lg"
+              value="{{ search_filters.full_name if search_filters is defined else search_term }}"
+              placeholder="Ejemplo: Carlos"
+            >
+          </div>
+          <div class="col-12 d-grid">
+            <button class="btn btn-primary btn-lg" type="submit">
+              <i class="bi bi-search me-2"></i>Consultar ahora
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-xl-4">
+      <div class="protocol-side-card">
+        <div class="protocol-kicker">
+          <i class="bi bi-megaphone-fill"></i>
+          Protocolo obligatorio
+        </div>
+
+        <div class="protocol-side-title">
+          No olvides notificar a tu cliente antes del despacho.
+        </div>
+
+        <div class="protocol-side-text">
+          Si no avisas, no puedes reportar. Comparte este mensaje antes de enviar el paquete.
+        </div>
+
+        <div class="protocol-mini-bubble">
+          <div class="label">Mensaje de advertencia</div>
+          <div class="text" id="dogonProtocolPreview">
+            Te confirmo que tu pedido está en proceso. Te recordamos que nuestra tienda está protegida por la Red DOGON; el incumplimiento en la recepción será reportado en la Central de Riesgos DOGON
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-light protocol-copy-btn" id="copyProtocolSidebarBtn">
+          <i class="bi bi-clipboard-check me-2"></i>Copiar Mensaje de Advertencia
+        </button>
+
+        <div class="copy-feedback" id="copyFeedbackSidebar">
+          Mensaje copiado correctamente.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if results %}
+  <div class="row g-4">
+    {% for person in results %}
+    {% set reports = attached_reports.get(person.lookup_key, []) %}
+    {% set report_count = reports|length %}
+    {% set has_reports = report_count > 0 %}
+    {% set latest_report = reports[0] if has_reports else None %}
+
+    {% if report_count >= 3 %}
+      {% set risk_class = 'risk-high' %}
+      {% set risk_text = 'Riesgo alto' %}
+      {% set recommendation = 'No recomendable para nueva validación sin revisión manual.' %}
+    {% elif report_count >= 1 %}
+      {% set risk_class = 'risk-medium' %}
+      {% set risk_text = 'Riesgo medio' %}
+      {% set recommendation = 'Requiere validación manual antes de continuar.' %}
+    {% else %}
+      {% set risk_class = 'risk-low' %}
+      {% set risk_text = 'Sin alertas activas' %}
+      {% set recommendation = 'No se encontraron reportes en la base actual.' %}
+    {% endif %}
+
+    <div class="col-12">
+      <div class="result-card">
+        <div class="result-card-header">
+          <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="result-avatar">
+                <i class="bi bi-person-fill"></i>
+              </div>
+              <div>
+                <h4 class="mb-1 fw-bold">{{ person.full_name }}</h4>
+                <div class="text-muted">Consulta por filtros de cliente</div>
+                <div class="small text-muted mt-1">
+                  Resultado de validación sobre la base interna de reportes
+                </div>
+              </div>
+            </div>
+
+            <div class="text-end person-report-status">
+              {{ traffic_light(report_count) }}
+              <span class="risk-badge {{ risk_class }}">
+                {% if has_reports %}
+                  <i class="bi bi-exclamation-octagon-fill"></i>
+                {% else %}
+                  <i class="bi bi-check-circle-fill"></i>
+                {% endif %}
+                {{ risk_text }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-card-body">
+
+          <div class="summary-grid">
+            <div class="summary-box">
+              <div class="label">Total reportes</div>
+              <div class="value">{{ report_count }}</div>
+            </div>
+            <div class="summary-box">
+              <div class="label">Ciudad principal</div>
+              <div class="value">{{ person.city or 'Sin ciudad' }}</div>
+            </div>
+            <div class="summary-box">
+              <div class="label">Último motivo</div>
+              <div class="value" style="font-size:16px;">
+                {{ latest_report.reason if latest_report else 'Sin alertas' }}
+              </div>
+            </div>
+            <div class="summary-box">
+              <div class="label">Recomendación</div>
+              <div class="value" style="font-size:15px;">
+                {{ 'Revisión manual' if has_reports else 'Sin reporte' }}
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-4">
+            <div class="col-xl-7">
+              <div class="info-grid">
+                <div class="info-item">
+                  <div class="info-label">Nombre completo</div>
+                  <div class="info-value">{{ person.full_name or 'No registrado' }}</div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-label">Cédula</div>
+                  <div class="info-value">{{ person.document_number or 'No registrado' }}</div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-label">Teléfono</div>
+                  <div class="info-value">{{ person.phone or 'Sin teléfono' }}</div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-label">Ciudad</div>
+                  <div class="info-value">{{ person.city or 'Sin ciudad' }}</div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-label">Dirección</div>
+                  <div class="info-value">{{ person.address or 'Sin dirección' }}</div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-label">Estado del perfil</div>
+                  <div class="info-value">{{ risk_text }}</div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-label">Motivo principal del reporte</div>
+                  <div class="info-value">
+                    {{ latest_report.reason if latest_report else 'Sin reportes activos' }}
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-label">Detalle principal</div>
+                  <div class="info-value">
+                    {{ latest_report.details if latest_report and latest_report.details else 'Sin detalle adicional' }}
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-label">Observación comercial</div>
+                  <div class="info-value">{{ recommendation }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-5">
+              {% if has_reports %}
+                <div class="report-box h-100">
+                  <div class="report-title">
+                    <i class="bi bi-shield-exclamation me-2"></i>Historial de reportes encontrados
+                  </div>
+
+                  {% for report in reports %}
+                  <div class="timeline-item">
+                    <div class="timeline-top">
+                      <div class="timeline-reason">{{ report.reason or 'Motivo no registrado' }}</div>
+                      <div class="timeline-date">{{ report.created_at[:10] if report.created_at else 'Sin fecha' }}</div>
+                    </div>
+
+                    <div class="timeline-detail">
+                      {{ report.details or 'Sin detalle adicional.' }}
+                    </div>
+
+                    <div class="small text-muted">
+                      <i class="bi bi-geo-alt me-1"></i>{{ report.city or person.city or 'Ciudad no registrada' }}
+                      {% if report.phone %}
+                        &nbsp;|&nbsp; <i class="bi bi-telephone me-1"></i>{{ report.phone }}
+                      {% endif %}
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="report-box-success h-100">
+                  <div class="fw-bold text-success mb-2">
+                    <i class="bi bi-check-circle-fill me-2"></i>Resultado favorable
+                  </div>
+                  <p class="mb-2 text-muted">
+                    No se encontraron reportes negativos activos para este usuario en la base actual.
+                  </p>
+                  <ul class="mb-0 text-muted small">
+                    <li>Sin incidencias vigentes</li>
+                    <li>Sin alertas comerciales activas</li>
+                    <li>Usuario no se encuentra reportado en nuestra BD</li>
+                  </ul>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% elif search_term %}
+  <div class="empty-query-card text-center">
+    {{ traffic_light(0) }}
+    <div class="mb-3">
+      <i class="bi bi-search fs-1 text-muted"></i>
+    </div>
+    <h4 class="fw-bold mb-2">Usuario no reportado</h4>
+    <p class="text-muted mb-0">
+      El usuario <strong>{{ search_term }}</strong> no se encuentra reportado en nuestra BD.
+    </p>
+  </div>
+{% else %}
+  <div class="empty-query-card text-center">
+    <div class="mb-3">
+      <i class="bi bi-database-check fs-1 text-primary"></i>
+    </div>
+    <h4 class="fw-bold mb-2">Consulta inteligente de perfiles</h4>
+    <p class="text-muted mb-0">
+      Ingresa un nombre completo para validar si existe historial negativo registrado por otros usuarios del sistema.
+    </p>
+  </div>
+{% endif %}
+
+<div class="modal fade dogon-modal" id="dogonProtocolModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="dogon-modal-header">
+        <div class="dogon-modal-kicker">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          Nota súper importante
+        </div>
+        <div class="dogon-modal-title">
+          Si un cliente te incumple y lo quieres reportar, antes de enviar el paquete debes notificarle el siguiente mensaje.
+        </div>
+     
+      </div>
+
+      <div class="dogon-modal-body modal-body">
+        <div class="whatsapp-demo-wrap">
+          <div class="whatsapp-topbar">
+            <div class="wa-avatar">
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <div>
+              <div class="wa-name">Cliente</div>
+              <div class="wa-status">En línea</div>
+            </div>
+          </div>
+
+          <div class="whatsapp-chat">
+            <div class="wa-row left">
+              <div class="wa-bubble left">
+                Hola, ¿mi pedido sí quedó en proceso?
+                <div class="wa-time">10:14 a. m.</div>
+              </div>
+            </div>
+
+            <div class="wa-row right">
+              <div class="wa-bubble right" id="dogonProtocolMessageBox">
+                Te confirmo que tu pedido está en proceso. Te recordamos que nuestra tienda está protegida por la Red DOGON; el incumplimiento injustificado en la recepción será reportado en la Central de Riesgos Logística.
+                <div class="wa-time">10:15 a. m.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dogon-copy-area">
+          <button type="button" class="btn btn-success dogon-copy-btn" id="copyProtocolModalBtn">
+            <i class="bi bi-whatsapp me-2"></i>Copiar mensaje para pegar
+          </button>
+
+          <div class="dogon-copy-note">
+            Copia este mensaje y envíalo al cliente antes del despacho.
+          </div>
+        </div>
+
+        <div class="copy-feedback" id="copyFeedbackModal">
+          Mensaje copiado correctamente.
+        </div>
+
+        <div class="dogon-recommendation">
+          <div class="dogon-recommendation-title">
+            📢 Recomendación de Seguridad DOGON:
+          </div>
+          <p class="dogon-recommendation-text">
+            "Si tienes un equipo de ventas o logística, asegúrate de que todos conozcan este protocolo. Compártele este mensaje a tus asesores: sin aviso previo al cliente, no habrá reporte válido."
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-footer border-0 px-4 pb-4 pt-0">
+        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+        <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold" id="continueSearchBtn">
+          Entendido, continuar consulta
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="query-loading-overlay" id="queryLoadingOverlay" aria-live="polite" aria-hidden="true">
+  <div class="query-loading-card">
+    <div class="query-loading-orb"></div>
+    <div class="query-loading-title">Estamos consultando</div>
+    <p class="query-loading-text">Un momento por favor.</p>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const protocolMessage = 'Te confirmo que tu pedido está en proceso. Te recordamos que nuestra tienda está protegida por la Red DOGON; el incumplimiento en la recepción será reportado en la Central de Riesgos Logística.';
+    const searchForm = document.getElementById("dogonSearchForm");
+    const modalEl = document.getElementById("dogonProtocolModal");
+    const continueBtn = document.getElementById("continueSearchBtn");
+    const copyProtocolModalBtn = document.getElementById("copyProtocolModalBtn");
+    const copyProtocolSidebarBtn = document.getElementById("copyProtocolSidebarBtn");
+    const copyFeedbackModal = document.getElementById("copyFeedbackModal");
+    const copyFeedbackSidebar = document.getElementById("copyFeedbackSidebar");
+    const queryLoadingOverlay = document.getElementById("queryLoadingOverlay");
+
+    let allowSubmit = false;
+    let protocolModal = null;
+
+    if (modalEl && typeof bootstrap !== "undefined") {
+      protocolModal = new bootstrap.Modal(modalEl, {
+        backdrop: "static",
+        keyboard: false
+      });
+    }
+
+    function showFeedback(element) {
+      if (!element) return;
+      element.classList.add("show");
+      setTimeout(() => {
+        element.classList.remove("show");
+      }, 2200);
+    }
+
+    function showQueryLoading() {
+      if (queryLoadingOverlay) {
+        queryLoadingOverlay.classList.add("show");
+        queryLoadingOverlay.setAttribute("aria-hidden", "false");
+      }
+
+      if (searchForm) {
+        const submitButton = searchForm.querySelector('button[type="submit"]');
+
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Consultando...';
+        }
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "absolute";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+
+    async function copyProtocol(targetFeedback) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(protocolMessage);
+        } else {
+          fallbackCopy(protocolMessage);
+        }
+        showFeedback(targetFeedback);
+      } catch (error) {
+        fallbackCopy(protocolMessage);
+        showFeedback(targetFeedback);
+      }
+    }
+
+    if (copyProtocolModalBtn) {
+      copyProtocolModalBtn.addEventListener("click", function () {
+        copyProtocol(copyFeedbackModal);
+      });
+    }
+
+    if (copyProtocolSidebarBtn) {
+      copyProtocolSidebarBtn.addEventListener("click", function () {
+        copyProtocol(copyFeedbackSidebar);
+      });
+    }
+
+    if (searchForm) {
+      searchForm.addEventListener("submit", function (e) {
+        const filterInputs = searchForm.querySelectorAll('input[name="document"], input[name="phone"], input[name="full_name"]');
+        const hasFilterValue = Array.from(filterInputs).some((input) => input.value.trim());
+
+        if (!hasFilterValue) {
+          return;
+        }
+
+        if (allowSubmit) {
+          showQueryLoading();
+          return;
+        }
+
+        const alreadySeen = localStorage.getItem("dogon_protocol_notice_seen");
+
+        if (alreadySeen === "1") {
+          showQueryLoading();
+          return;
+        }
+
+        e.preventDefault();
+
+        if (protocolModal) {
+          protocolModal.show();
+        }
+      });
+    }
+
+    if (continueBtn && searchForm) {
+      continueBtn.addEventListener("click", function () {
+        localStorage.setItem("dogon_protocol_notice_seen", "1");
+        allowSubmit = true;
+
+        if (protocolModal) {
+          protocolModal.hide();
+        }
+
+        setTimeout(() => {
+          showQueryLoading();
+          searchForm.submit();
+        }, 180);
+      });
+    }
+  });
+</script>
+
+{% endblock %}
